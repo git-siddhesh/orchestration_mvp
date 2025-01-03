@@ -8,7 +8,7 @@ from utils.call_api_hr import *
 from agents.data import DATAAgent
 
 import yaml
-VARS = yaml.safe_load(open("utils\\api_info.yaml", "r"))
+VARS = yaml.safe_load(open("files\\api_info.yaml", "r"))
 
 
 

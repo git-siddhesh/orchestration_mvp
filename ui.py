@@ -44,7 +44,7 @@ if "last_payload" not in st.session_state:
     st.session_state.last_payload = None
 
 # HR tree structure
-hr_tree = json.load(open("utils\\ui_tree_data.json"))
+hr_tree = json.load(open("files\\ui_tree_data.json"))
 
 
 def display_menu():

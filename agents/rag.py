@@ -7,7 +7,7 @@ from utils.create_vdb_data import MarkdownVectorDB
 
 import yaml
 
-VARS = yaml.safe_load(open("utils\\api_info.yaml", "r"))
+VARS = yaml.safe_load(open("files\\api_info.yaml", "r"))
 vector_db = MarkdownVectorDB()
 
 class RAGAgent(Chat):#, Agent):

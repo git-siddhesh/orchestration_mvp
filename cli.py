@@ -37,7 +37,7 @@ send_user_data = False
 last_payload = None
 
 # HR tree structure
-hr_tree: Dict[str, Any] = json.load(open("utils\\ui_tree_data.json"))
+hr_tree: Dict[str, Any] = json.load(open("files\\ui_tree_data.json"))
 
 
 # CLI Functions

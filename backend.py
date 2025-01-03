@@ -31,7 +31,7 @@ from utils.llm import LLMAgent
 
 
 import yaml
-VARS = yaml.safe_load(open("utils\\api_info.yaml", "r"))
+VARS = yaml.safe_load(open("files\\api_info.yaml", "r"))
 DATA_VARS = VARS['DATA_EXTRACT']
 EXEC_APIS = VARS['EXEC_APIS']
 

@@ -6,7 +6,7 @@ from utils.call_api_hr import *
 import yaml
 
 from packets import CounterQueryPayload
-VARS = yaml.safe_load(open("utils\\api_info.yaml", "r"))
+VARS = yaml.safe_load(open("files\\api_info.yaml", "r"))
 VARS = VARS['EXEC_APIS']
 
 

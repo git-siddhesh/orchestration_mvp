@@ -1,7 +1,7 @@
 import yaml
 
 
-prompt_file = "utils\\prompts.yaml"
+prompt_file = "files\\prompts.yaml"
 with open(prompt_file, encoding='utf-8') as file:
     prompts = yaml.load(file, Loader=yaml.FullLoader)
     
