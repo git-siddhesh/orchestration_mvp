@@ -1,59 +1,22 @@
-import sys
-
-from packets import (
-    PacketType,
-    WebSocketPacket,
-    CounterQueryPayload,
-    UserQueryPayload,
-    BotResponsePayload,
-    RAGPayload,
-    ResponseFeedbackPayload,
-
-    UserDataPayload,
-    UserData, 
-    Query,
-    Message,
-    Response,
-    APIData
-)
-
-from main_cli import endpoint
-
-from typing import Union, Any, Dict, List
+import streamlit as st
+from streamlit.runtime.state.session_state import SessionState
 import json
 import asyncio
-
-
-import streamlit as st
-
-
-
 
 # Initialize session state for maintaining state across interactions
 if "selected_path" not in st.session_state:
     st.session_state.selected_path = []
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
-if "query_type" not in st.session_state:
-    st.session_state.query_type = "main"
-if "docs" not in st.session_state:
-    st.session_state.docs = []
-if "send_user_data" not in st.session_state:
-    st.session_state.send_user_data = False
-if "last_payload" not in st.session_state:
-    st.session_state.last_payload = None
-
 # HR tree structure
-hr_tree = json.load(open("utils\\ui_tree_data.json"))
+hr_tree = json.load(open("ui_tree_data.json"))
 
 
 def display_menu():
     # Start at the top of the menu tree
-    # current_menu may be list or dict
-
-    current_menu: Union[Dict, List] = hr_tree["Main Menu"]
+    current_menu = hr_tree["Main Menu"]
     for path in st.session_state.selected_path:
-        current_menu: Any | Any = (
+        current_menu = (
             current_menu[path] if isinstance(current_menu, dict) else current_menu
         )
 
@@ -117,8 +80,29 @@ def display_menu():
             st.rerun()
 
 
-def page_content():
+from backend import ChatBotBackend, ChatDB, RAGAgent
+from langchain.docstore.document import Document
+from create_vdb_data import MarkdownVectorDB
 
+# Initialize memory and agent in session state
+if "memory" not in st.session_state:
+    st.session_state.memory = ChatDB()
+
+if "rag_agent" not in st.session_state:
+    st.session_state.rag_agent = RAGAgent()
+
+if "vector_db" not in st.session_state:
+    st.session_state.vector_db = MarkdownVectorDB()
+
+if "query_type" not in st.session_state:
+    st.session_state.query_type = 0
+
+if "docs" not in st.session_state:
+    st.session_state.docs = []
+
+
+# Main Streamlit App
+async def main():
     st.set_page_config(page_title="HR ChatBot", layout="wide")
 
     # Sidebar for settings and document rendering
@@ -133,6 +117,15 @@ def page_content():
 
     # Display current menu
     display_menu()
+    # update the selected path in the st.session_state.memory.user_data['selected_path']
+    st.session_state.memory.user_data["selected_path"] = st.session_state.selected_path
+
+    if "backend" not in st.session_state:
+        st.session_state.backend = ChatBotBackend(
+            st.session_state.memory,
+            st.session_state.rag_agent,
+            st.session_state.vector_db,
+        )
 
     for message in st.session_state.chat_history:
         role, content = message["role"], message["content"]
@@ -142,96 +135,46 @@ def page_content():
     for i, doc in enumerate(st.session_state.docs):
         with st.sidebar:
             with st.expander(f"Document {i+1}"):
-                st.write(doc['page_content'])
+                st.write(doc.page_content)
             with st.expander(f"Metadata {i+1}"):
-                st.write(doc['metadata'])
-
-
-
-async def initiate_connection():
-    if st.session_state.send_user_data == False:
-        st.session_state.send_user_data = True
-        print("Creating new client")
-        packet = WebSocketPacket(
-                    packet_type='user_data',
-                    session_id="123",
-                    payload = UserDataPayload(
-                                user_data=UserData(
-                                    user_id="1234",
-                                    user_name="siddhesh dosi",
-                                    user_email= "dosisiddhesh@alumni.iitgn.ac.in",
-                                    api = APIData(
-                                        input_data={},
-                                        output_data={},
-                                        dynamic_data={}),
-                                    user_metadata={}
-                            )
-                )
-        )
-
-        await endpoint(packet)
-
-
-# Main Streamlit App
-async def main():
-    page_content()
-    await initiate_connection()
+                st.write(doc.metadata)
 
     # Chat input using `st.chat_input`
     if user_input := st.chat_input("Ask me anything..."):
+
         st.session_state.chat_history.append({"role": "user", "content": user_input})
         with st.chat_message("user"):
             st.markdown(user_input)
 
-        if st.session_state.query_type == "main":
-            payload = {
-                "packet_type": "user_query",
-                "session_id": "123",
-                "conversation_id": "456",
-                "payload": {
-                    "query": {"text": user_input},
-                    "query_domain": " > ".join(st.session_state.selected_path)
-                }
-            }
-            payload = WebSocketPacket.model_validate(payload)
-            response = await endpoint(payload)
-            st.session_state.last_payload = response
-            
-        elif st.session_state.query_type == "counter":
-            last_payload = st.session_state.last_payload
-            last_payload.payload.user_response = Response(text=user_input)
-            response = await endpoint(last_payload)
-            st.session_state.last_payload = response
+        if st.session_state.query_type == 0:
+            response, status = await st.session_state.backend.get_api_response(
+                user_input, None
+            )
+            st.session_state.query_type = status
+        else:
+            response, status = await st.session_state.backend.get_api_response(
+                None, user_input
+            )
 
-
-
-        print("****************************** Message received (client side) ******************************")
-        print("Response", response.model_dump())
-
-        text = ""
-        if response.packet_type == PacketType.COUNTER_QUERY:
-            text = response.payload.counter_query.text
-            st.session_state.chat_history.append({"role": "assistant", "content": text})
-            st.session_state.query_type = "counter"
-        elif response.packet_type == PacketType.BOT_RESPONSE:
-            text = response.payload.bot_response.text
-            st.session_state.chat_history.append({"role": "assistant", "content": text})
-            st.session_state.query_type = "main"
-        elif response.packet_type == PacketType.RAG_DOCUMENTS:
-            text = response.payload.bot_response.text
-            st.session_state.chat_history.append({"role": "assistant", "content": text})
-            st.session_state.docs = [{'page_content': doc.content, 'metadata': doc.metadata} for doc in response.payload.documents]
-            st.session_state.query_type = "main"
-
+        st.session_state.chat_history.append(
+            {"role": "assistant", "content": response[1]}
+        )
+        st.session_state.docs = response[2] if response[2] else []
         with st.chat_message("assistant"):
-            st.markdown(text)
-        
+            st.markdown(response[1])  # Bot asks for additional details
+
+        # print(response)
 
         st.rerun()
+
+        # # Append bot response to chat history
+        # with st.chat_message("assistant"):
+        #     st.markdown(response)
+
+        # # Trigger UI rerun
+        # st.rerun()
 
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-
+    # main()
