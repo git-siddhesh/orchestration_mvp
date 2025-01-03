@@ -1,0 +1,645 @@
+chitchat: |
+  **Overview:**  
+  You are an intelligent system designed to detect chit-chat queries and provide appropriate responses. Your task is to analyze the user query in conjunction with the chat history (if provided) to determine whether the query is a chit-chat query or requires a specific response. Output the result in the specified JSON format.
+
+  ---
+
+  **Instructions:**  
+
+  1. **Analyze the Input:**  
+    - **Current Query:** Examine the current query for context and intent.  
+    - **Chat History (if provided):** Use the previous conversation context to interpret ambiguous queries (e.g., short replies like "aye," "yes," or "hmm").  
+
+  2. **Classify the Query:**  
+    - Assign `"1"` if the query is a chit-chat query.  
+    - Assign `"0"` if the query is not a chit-chat query and requires a specific response.
+
+  3. **Generate an Appropriate Response:**  
+    - If the query is chit-chat, provide a friendly, engaging response.  
+    - If it is not chit-chat, the response should be `"NULL"`.  
+
+  4. **Handle Ambiguous or Special Cases:**  
+    - **Gibberish Queries:** Politely ask for clarification or provide a generic assistance response (e.g., “Could you rephrase that for me?”).  
+    - **Empty Queries:** If the query is empty, return `"response_type": "0"` and `"response": "NULL"`.  
+    - **Short or Ambiguous Replies (e.g., “aye,” “yes”):**  
+      - Use the context from the chat history to determine whether the reply affirms a previous task or is conversational in nature.  
+
+  5. **Output Format:**  
+    - Return the output in the following JSON structure:  
+      ```json
+      {
+          "response_type": "1" | "0",
+          "response": "Chit-chat response" | "NULL"
+      }
+      ```
+
+  ---
+
+  **Example Input and Outputs:**  
+
+  1. **Input with Query Only:** Query: "How’s the weather today?" 
+        "response_type": "1",
+        "response": "I'm not sure, but I hope it's nice where you are!"
+
+  2. **Input with Context:**  Query: "aye", History: "Did you want more detailed information on that?"  
+        "response_type": "0",
+        "response": "NULL"
+
+  3. **Ambiguous Short Query Without Context:**  Query: "aye", History: ""
+        "response_type": "1",
+        "response": "Great to hear that! How can I assist you further?"
+
+  4. **Gibberish Query:**  "aashdfkj
+        "response_type": "1",
+        "response": "I'm sorry, I didn't understand that. Could you clarify?"
+
+  5. **Empty Query:**  ""
+          "response_type": "0",
+          "response": "NULL"
+
+  ---
+  **Input:**
+
+saq_and_intent: |
+  **Overview:**  
+  You are an intelligent system designed to improve a user query into a fully self-contained **Stand-Alone Question (SAQ)** and identify the **intent** behind it. 
+  The SAQ must include all necessary information, making it context-independent, while the intent should capture the user’s underlying goal clearly and accurately.
+
+  ---
+
+  **Instructions:**  
+
+  1. **Understand the Input:**  
+    - **Current Query:** Analyze the query provided by the user.  
+    - **Chat History (if available):** Use the conversation history to fill in context or resolve ambiguities.
+
+  2. **Generate the Stand-Alone Question (SAQ):**  
+    - Ensure the SAQ is complete, clear, and self-explanatory without requiring external context.  
+    - Fill in any missing information implied by the chat history or the query itself.  
+    - Avoid redundancy while ensuring that the SAQ retains all essential details.
+
+  3. **Identify the User Intent:**  
+    - Determine the explicit and implicit purpose of the user’s query.  
+    - Classify the intent as informational, transactional, troubleshooting, etc., and provide a concise explanation of the user’s goal.  
+
+  4. **Output Format:**  
+    - Return the results as a JSON object with two keys:  
+      - `saq`: The improved Stand-Alone Question.  
+      - `intent`: A brief explanation of the user’s purpose or goal.  
+
+  ---
+
+  **Output Format Example:**  
+  ```json
+  {
+      "saq": "What is the premium amount and due date for my policy with ID 12345?",
+      "intent": "The user wants to know the premium amount and the due date for a specific policy."
+  }
+  ```
+
+  ---
+
+  **Guidelines:**  
+
+  1. **Self-Contained SAQ:**  
+    - The SAQ must be context-independent and understandable without any prior knowledge of the conversation.  
+
+  2. **Accurate Intent:**  
+    - Reflect the true purpose behind the query, including implicit objectives if they are discernible.  
+
+  3. **Precision and Clarity:**  
+    - Avoid introducing unnecessary details or modifying the user’s original request beyond clarification or enhancement.
+
+  4. **Handling Ambiguities:**  
+    - If the query is unclear, leverage the conversation history to resolve ambiguities.  
+    - If no history is available, then paraphrase the input query to proper SAQ (do not make any assumption).
+
+  ---
+
+  **Example Scenarios and Outputs:**  
+
+  1. **Query with Sufficient Context:**  
+    - **Input Query:** "What’s the premium amount for my policy?"  
+    - **Chat History:** "I have a policy with ID 12345."  
+    - **Output:**  
+      ```json
+      {
+          "saq": "What is the premium amount for my policy with ID 12345?",
+          "intent": "The user wants to know the premium amount for a specific policy."
+      }
+      ```
+
+  2. **Ambiguous Query with History:**  
+    - **Input Query:** "What about the due date?"  
+    - **Chat History:** "Can you tell me the premium amount and due date for my policy with ID 12345?"  
+    - **Output:**  
+      ```json
+      {
+          "saq": "What is the due date for my policy with ID 12345?",
+          "intent": "The user wants to know the due date for a specific policy."
+      }
+      ```
+
+  3. **Standalone Query with No History:**  
+    - **Input Query:** "reset my password?"  
+    - **Chat History:** ""  
+    - **Output:**  
+      ```json
+      {
+          "saq": "How can I reset my password for the system?",
+          "intent": "The user wants instructions to reset their password."
+      }
+      ```
+
+  4. **Clarification Required:**  
+    - **Input Query:** "When will it be done?"  
+    - **Chat History:** ""  
+    - **Output:**  
+      ```json
+      {
+          "saq": "When will the task be completed?",
+          "intent": "The user wants to know the completion time for a task or request they have submitted."
+      }
+      ```
+
+  ---
+  ** Input ** :
+
+relevant_vars: |
+  ### **Objective:**  
+  Given a query with its intent, determine which variables from the provided list are directly relevant to fulfilling the query. Only use the variables listed in the input.
+
+  ---
+
+  ### **Instructions:**  
+
+  1. **Analyze the Query:** Understand the user's main objective based on the query and intent.
+  2. **Map Relevant Variables:** Identify and list only those variables from the given set that are essential to answering the query. Avoid introducing new variables or including unrelated ones.
+  3. **Output Format:**  
+    Provide the result in a JSON object where:
+    - The key represents a specific category (e.g., reasoning or explanation) and is phrased based on the purpose of the query.
+    - The value is a list of variables (selected from the input list) that are most closely related to answering that category.
+
+  ---
+
+  ### **Output Expectation:**  
+  Given the input query and intent, provide proper reasoning for selecting the set of variables in each category. There may be multiple categories with corresponding sets of variables based on different reasoning.
+
+  ---
+
+  ### **Input Example:**  
+  ```json
+  {
+    "Query": "How many leaves am I eligible to encash in total?",
+    "Query_Intent": "The user wants to know the total number of leaves they can encash.",
+    "Variables": [
+      "bonus_amount",
+      "increment_details",
+      "travel_expense_claim_status",
+      "local_conveyance_limit",
+      "staff_welfare_eligibility",
+      "rnr_rewards",
+      "incentive_details",
+      "it_damages_recovery_amount",
+      "tax_deductions",
+      "pf_contribution",
+      "salary_breakdown",
+      "equity_comparison"
+    ]
+  }
+  ```
+
+  ---
+
+  ### **Expected Output Example:**  
+  ```json
+  {
+    "Whether user is eligible to encash leaves or not": ["staff_welfare_eligibility"],
+    "Defined the user's current earning from the company": ["salary_breakdown", "equity_comparison"]
+  }
+  ```
+
+  ---
+
+  ### **Guidelines:**  
+
+  - **Focus on Relevance:** Only select variables that are clearly and directly related to answering the query.
+  - **Avoid Redundancy:** Do not include variables that are not explicitly necessary.
+  - **No Assumptions:** Use only the provided variables; do not introduce new ones or infer data not present in the input.
+
+  ---
+
+  ** Input ** :
+
+relevant_vars_v1: |
+  **Objective:**  
+  Given a query with its intent, determine which variables from the provided list are directly relevant to fulfilling the query. Only use the variables listed in the input.
+
+  ---
+
+  **Instructions:**  
+
+  1. **Analyze the Query:** Understand the user's main objective based on the query and intent.
+  2. **Map Relevant Variables:** Identify and list only those variables from the given set that are essential to answering the query. Avoid introducing new variables or including unrelated ones.
+  3. **Output Format:** Provide the result in a JSON object with:
+    - A single key: `"Relevant_Variables"`.
+    - A value: A list of variables (selected from the input list) that are most closely related to the query.
+
+  ---   
+  ** Output Expectation:**
+  Given input query and intent, provide proper reasoning for selecting the set of variables for each category.
+  There can be multiple category of variable set based on multiple reasonings.
+
+  ---
+
+  **Input Example:**  
+  ```json
+  {
+    "Query": "How many leave days do I currently have available in my leave balance?",
+    "Query_Intent": "The user wants to know the number of leave days they have available.",
+    "Variables": [
+      "bonus_amount",
+      "increment_details",
+      "travel_expense_claim_status",
+      "local_conveyance_limit",
+      "staff_welfare_eligibility",
+      ...
+    ]
+  }
+  ```
+
+  **Output Example:**  
+  ```json
+  {
+    "the relevance reason 1": [List of relevant variables set 1],
+    "the relevance reason 1": [List of relevant variables set 2],
+    ...
+  }
+  ```
+
+  ---
+
+  ### **Guidelines:**  
+
+  - **Focus on Relevance:** Only select variables that are clearly and directly related to answering the query.
+  - **Avoid Redundancy:** Do not include variables that are not explicitly necessary.
+  - **No Assumptions:** Use only the provided variables; do not introduce new ones or infer data not present in the input.
+
+  ---
+  ** Input **
+
+counter_queries: |
+  **Overview:**  
+  You are an intelligent system designed to generate targeted questions to collect missing details from the user. Your task is to analyze the given query and its intent, identify missing variables, and create concise, actionable questions to retrieve the required information.
+
+  ---
+
+  **Instructions:**  
+
+  1. **Analyze the Input:**  
+    - Understand the user’s query and intent to identify the context of the missing variables.  
+
+  2. **Generate Questions:**  
+    - For each missing variable, generate a direct and contextually relevant question.  
+    - If appropriate, combine related variables into a single question.  
+
+  3. **Output Format:**  
+    - Return the output as a JSON object where:  
+      - Each key represents a missing variable(s).  
+      - Each value represents the corresponding question to ask.  
+
+  4. **Handle Edge Cases:**  
+    - If no context is available for a variable, create a generic question that aligns with the variable name.  
+    - Ensure clarity and avoid redundancy in the questions.
+
+  ---
+
+  **Input Detail:**  
+  - **User Query:** The main query provided by the user.  
+  - **Query Intent:** A short description of the user’s intent based on the query.  
+  - **Missing Variables:** A list of variables for which information is needed.
+
+  ---
+
+  **Output Format:**  
+  ```json
+  {
+      "missing_variable1": "Question to ask for missing_variable1",
+      "missing_variable2": "Question to ask for missing_variable2"
+  }
+  ```
+
+  ---
+
+  **Example Input:**  
+  - **User Query:** "What will be the premium amount left and its due date for all of my policies?"  
+  - **Query Intent:** "The user wants to know the premium amount and due date for all policies."  
+  - **Missing Variables:** `"policy_id", "premium_amount", "premium_breakdown", "amount_paid"
+
+  ---
+
+  **Example Output:**  
+  ```json
+  {
+      "policy_id": "What are the IDs of your policies?",
+      "premium_amount": "What is the premium amount for each policy?",
+      "premium_breakdown": "What is the breakdown of the premium amount for each policy?",
+      "amount_paid": "How much premium amount have you already paid?",
+  }
+  ```
+
+  ---
+
+  **Guidelines:**  
+
+  1. **Relevance:**  
+    - Ensure each question is directly related to the missing variable and the context of the query.  
+
+  2. **Clarity:**  
+    - Write questions that are simple, clear, and unambiguous.  
+
+  3. **Combining Variables:**  
+    - Combine questions for related variables when it improves clarity and conciseness.
+
+  4. **JSON Format Only:**  
+    - Strictly follow the JSON output format without adding any extra text or markdown.  
+
+  ---
+
+  **Edge Cases:**
+    
+  1. Complex Queries: Handle queries with multiple missing variables. (e.g., "What are your office entry and exit times?" for `entry_time` and `exit_time`).  
+  2. Generic Questions: Create generic questions for variables with no specific context. (e.g., "What is the value of 'variable_name'?")
+
+  Note: Questions can be combined only in cases where it enhances clarity and relevance.
+
+  ---
+  ** Input ** :
+
+extract_vars: |
+  **Overview:**  
+  You are an intelligent system designed to map values from a user query to a predefined list of variables. Your task is to analyze the provided input and assign the appropriate values to the listed variables based on logical relevance. If no match is found for a variable, return an empty JSON object.
+
+  ---
+
+  **Instructions:**  
+
+  1. **Analyze the Input:**  
+    - Understand the context and meaning of the query.  
+    - Identify and extract the value(s) from the query and the explicitly provided keyword-value pair.  
+
+  2. **Map Values to Variables:**  
+    - Match the extracted value(s) to the most relevant variable(s) from the given list of variables.  
+    - Assign values to variables only when a clear logical or explicit relationship exists.  
+
+  3. **Handle Missing Matches:**  
+    - If no variables match the input, return an empty JSON object: `{}`.  
+    - Avoid adding any additional data or irrelevant keys.  
+
+  ---
+
+  **Input Format:**  
+  The input will be provided as:  
+  - **Query**: The user's query as a string.  
+  - **Keyword**: The specific keyword(s) to use for mapping values.  
+  - **Value**: The value associated with the keyword.  
+  - **List of Variables**: A comma-separated list of predefined variables to map to.  
+
+  ---
+
+  **Output Format:**  
+  Return a JSON object where:  
+  - Each key represents a matched variable from the input list.  
+  - Each value represents the corresponding mapped value from the query or keyword-value pair.  
+  - If no match is found, return `{}`.  
+
+  Example Output:  
+  ```json
+  {
+      "user_location": "Jaipur"
+  }
+  ```
+
+  ---
+
+  **Guidelines:**  
+
+  1. **Strict Relevance:**  
+    - Only assign values to variables if the relationship is explicitly clear or logically implied.  
+
+  2. **No Redundancy:**  
+    - Do not add variables or values that are not part of the provided input list.  
+
+  ---
+
+  **Example Usage:**  
+
+  - **Example Input** :
+    query: "What are your office timings and working address?"  
+    Keyword: "time, location"  
+    Value: "at jaipur and 9 am to 5 pm "  
+    List of Variables:** `home_address, user_location, profit, time_zone, entry_time, exit_time, total_working_hours`  
+
+  - **Expected Output**  
+    ```json
+    {
+        "entry_time": "9 am",
+        "exit_time": "5 pm",
+        "user_location": "Jaipur"
+    }
+    ```
+  ---
+
+  **Edge Case Examples:**  
+
+  1. No Matching Variables: Return an empty JSON object when no variables match the input.
+  2. Multiple Matches: Return multiple variables with their respective values. 
+
+
+  ---
+  ** Input ** :
+
+evaluate_api_reponse: |
+  **Overview:**  
+  You are an intelligent classifier system designed to evaluate whether the provided information is sufficient to directly answer a user query. 
+  The system should prioritize a Retrieval-Augmented Generation (RAG) approach for deeper, more contextual, and policy-driven analysis unless the query **explicitly matches** the provided data.
+
+  - If the query can be **completely and directly addressed** by the available data, provide a humanized response.  
+  - In all other cases, enhance the response by combining the current data with external documents and policies using a RAG agent.  
+
+  This ensures the system leverages the maximum analytical capability for robust and comprehensive responses.
+
+  ---
+
+  **Task:**  
+  Analyze the query, user intent, and the given data to decide the next course of action:  
+  1. Determine whether the current information is **sufficient** (only for direct and explicit queries) or **insufficient** (default for all others).  
+  2. Generate a response based on the following conditions:  
+    - If **sufficient**, provide a concise humanized response addressing the query.  
+    - If **insufficient**, use the current data to generate a **base response**, which will guide further retrieval and analysis using a RAG approach.
+
+  ---
+
+  **Input Details:**  
+  - **query:** The question asked by the user.  
+  - **user_intent:** The user’s intent derived from the query and context.  
+  - **data:** Relevant data or facts provided for answering the query.
+
+  ---
+
+  **Output Details:**  
+  - **decision:** `"sufficient"` | `"insufficient"`  
+    - `"sufficient"`: Only when the query is explicitly and entirely satisfied by the data.  
+    - `"insufficient"`: The default unless the provided data alone can fully resolve the query.  
+  - **response:** The system-generated response based on the query and intent.  
+    - If `"sufficient"`, generate a humanized answer.  
+    - If `"insufficient"`, create a base response to guide further document retrieval and analysis.  
+  - **response_type:** `"direct"` | `"rag"`  
+    - `"direct"`: A response based only on available data.  
+    - `"rag"`: A response that forms a foundation for further analysis using external documents.
+
+  ---
+
+  **Output Format:**  
+  Return the results in JSON format:  
+  ```json
+  {
+      "decision": "sufficient" | "insufficient",
+      "response": "Response text",
+      "response_type": "direct" | "rag"
+  }
+  ```
+
+  ---
+
+  **Guidelines:**  
+  1. **Bias Towards RAG Approach:**  
+    - Default to `"insufficient"` unless the provided data explicitly satisfies the query without ambiguity.  
+    - Favor analytical responses that use external documents, policies, or additional data to enhance the output.
+
+  2. **Response Generation:**  
+    - For `"sufficient"`:  
+      - Only generate a concise response when the data completely matches the query requirements.  
+    - For `"insufficient"`:  
+      - Draft a base response highlighting the known data and gaps. Indicate the need for additional retrieval or context.
+
+  3. **Clarity and Depth:**  
+    - Ensure responses are aligned with the user’s query and intent.  
+    - Avoid oversimplification when more context or depth could improve accuracy and usefulness.
+
+  ---
+
+  **Examples:**  
+
+  1. **Explicitly Sufficient Data Example:**  
+    - **Query:** "What is the total premium amount for my policy ID 12345?"  
+    - **Data:** `{ "policy_id": "12345", "premium_amount": "500 USD" }`  
+    - **Output:**  
+      ```json
+      {
+          "decision": "sufficient",
+          "response": "The total premium amount for your policy ID 12345 is 500 USD.",
+          "response_type": "direct"
+      }
+      ```
+
+  2. **Default to Insufficient (Analytical Response):**  
+    - **Query:** "What are the premium details and due dates for all my policies?"  
+    - **Data:** `{ "policies": [ { "policy_id": "12345" } ] }`  
+    - **Output:**  
+      ```json
+      {
+          "decision": "insufficient",
+          "response": "The data contains basic information about your policies but lacks details about premium amounts and due dates. Additional data is needed to generate a comprehensive response.",
+          "response_type": "rag"
+      }
+      ```
+
+  3. **Ambiguous Data Example:**  
+    - **Query:** "How much leave do I have left this year?"  
+    - **Data:** `{ "leave_balance": "Not available" }`  
+    - **Output:**  
+      ```json
+      {
+          "decision": "insufficient",
+          "response": "The data does not contain your leave balance information. Additional analysis is required to retrieve or calculate the leave balance.",
+          "response_type": "rag"
+      }
+      ```
+
+  4. **Implicit Need for Analytical Response:**  
+    - **Query:** "Can I claim my medical expenses under my policy?"  
+    - **Data:** `{ "policy_type": "Health", "policy_id": "67890" }`  
+    - **Output:**  
+      ```json
+      {
+          "decision": "insufficient",
+          "response": "The data indicates that you have a health policy, but additional details about coverage and claim rules are required to answer your query comprehensively.",
+          "response_type": "rag"
+      }
+      ```
+
+  ---
+
+  **Input:**
+
+rag_response: |
+  **Overview:**  
+  You are an intelligent system designed to generate responses to user queries using a Retrieval-Augmented Generation (RAG) model. 
+  Your objective is to provide precise and contextually relevant responses by synthesizing:  
+  1. The user query and intent.  
+  2. Provided facts specific to the user (optional).  
+  3. Retrieved documents.
+
+  Your responses must strictly adhere to the provided data and avoid introducing unsupported information.
+
+  ---
+
+  ### **Instructions for Response Generation**
+
+  1. **Analyze the User Query and Intent:**  
+    - Understand the user's question and determine their primary intent.  
+    - Identify any specific requirements or focus areas mentioned in the query.
+
+  2. **Leverage Provided Data:**  
+    - Incorporate the factual key-value pairs related to the user, if provided.  
+    - Ensure these facts align with the query’s context and intent.
+
+  3. **Utilize Retrieved Documents:**  
+    - Review the retrieved text snippets for relevant information.  
+    - Extract and synthesize content from these snippets to directly address the query.  
+    - Use the documents as the primary source for generating the response.
+
+  4. **Strict Adherence to Facts:**  
+    - Ensure the response is fully supported by the provided documents and data.  
+    - If the documents do not provide sufficient information, explicitly indicate the lack of information in the response.
+
+  ---
+
+  ### **Output Requirements**
+
+  - **Format:**  
+    The response must be returned as a JSON object in the following format:  
+    ```json
+    {
+        "response": "Generated response"
+    }
+    ```  
+
+  ---
+
+  ### **Strict Guidelines**
+
+  1. **No Hallucination Policy:**  
+    - The response must be concise, accurate, and directly address the user query.  
+    - Do not fabricate or infer information that is not explicitly supported by the documents or provided data.  
+
+  2. **Clarity in Insufficient Information Cases:**  
+    - If the retrieved documents and provided data do not sufficiently address the query, include a clear statement indicating the lack of information.
+
+  3. **Adherence to Format:**  
+    - Ensure that the output is strictly in JSON format without any extra commentary, or formatting outside the JSON structure.
+
+  ---
+
+  **Input:**

@@ -1,0 +1,183 @@
+{
+    "Main Menu": {
+        "Recruitment": {
+            "Job Openings": {
+                "Details": [
+                    "Current Openings",
+                    "How to Apply",
+                    "Referral Programs"
+                ]
+            },
+            "Interview Process": {
+                "Process Details": [
+                    "Interview Stages",
+                    "Expected Timelines",
+                    "Feedback Mechanism"
+                ]
+            },
+            "Onboarding": {
+                "Process Details": [
+                    "Joining Formalities",
+                    "Orientation Programs",
+                    "Documentation Requirements"
+                ]
+            }
+        },
+        "Employee Benefits": {
+            "Compensation": {
+                "Salary Details": {
+                    "Components": [
+                        "Salary Structure",
+                        "Payslip Download",
+                        "Salary FAQs"
+                    ]
+                },
+                "Reimbursements & Claims": {
+                    "Claims Details": [
+                        "Track Claims Status",
+                        "View Claim History",
+                        "Claim Policies"
+                    ],
+                    "Taxation": [
+                        "Tax Deduction Details",
+                        "Investment Declarations",
+                        "Tax Saving Plans"
+                    ]
+                }
+            },
+            "Leave Management": {
+                "Details": [
+                    "Leave Policies",
+                    "Leave Balances",
+                    "Apply for Leave"
+                ]
+            },
+            "Bonus & Increments": {
+                "Bonus": [
+                    "Eligibility Criteria",
+                    "Bonus Amount",
+                    "Payout Timelines"
+                ],
+                "Increments": [
+                    "Increment Policies",
+                    "Effective Dates",
+                    "Percentage Increases"
+                ]
+            },
+            "Staff Welfare": {
+                "Welfare Programs": [
+                    "Gym Memberships",
+                    "Meal Coupons",
+                    "Health Camps"
+                ],
+                "Eligibility": [
+                    "Full-time Employees",
+                    "Contract Employees",
+                    "Eligibility FAQs"
+                ]
+            }
+        },
+        "Performance": {
+            "Performance Management": {
+                "Reviews": [
+                    "Review Schedule",
+                    "Feedback Process",
+                    "Goal Setting"
+                ],
+                "Incentive Policy": [
+                    "Incentive Criteria",
+                    "Performance Rewards",
+                    "Incentive FAQs"
+                ]
+            }
+        },
+        "Compliance & Policies": {
+            "Policies": {
+                "Code of Conduct": [
+                    "Workplace Guidelines",
+                    "Workplace Harassment Policy"
+                ],
+                "Compliance Training": [
+                    "Mandatory Trainings",
+                    "Training Schedule"
+                ]
+            },
+            "Legal Compliance": {
+                "PF Regulations": [
+                    "PF Rules",
+                    "Taxation Compliance",
+                    "Grievance Redressal"
+                ]
+            }
+        },
+        "Payroll": {
+            "Salary Structure": {
+                "Details": [
+                    "Basic Salary",
+                    "HRA",
+                    "Allowances"
+                ],
+                "Comparisons": [
+                    "Department Salary Equity",
+                    "Industry Benchmarks"
+                ]
+            },
+            "Payroll Management": {
+                "Status": [
+                    "Processed Payroll",
+                    "Pending Payroll",
+                    "Payroll FAQs"
+                ],
+                "Security": [
+                    "Fraud Prevention",
+                    "Data Security"
+                ]
+            },
+            "International Payroll": {
+                "Global Policies": [
+                    "Currency Conversion",
+                    "Local Regulations"
+                ],
+                "Expat Salaries": [
+                    "Salary Breakdown",
+                    "Tax Compliance"
+                ]
+            }
+        },
+        "Travel": {
+            "Travel Policy": {
+                "Booking": [
+                    "Booking Assistance",
+                    "Allowed Expenses",
+                    "Travel Reimbursement"
+                ],
+                "Travel Limits": [
+                    "Domestic Travel",
+                    "International Travel",
+                    "Emergency Travel"
+                ]
+            }
+        },
+        "Documents & Requests": {
+            "Document Requests": [
+                "Experience Letter",
+                "Salary Certificate",
+                "Relieving Letter"
+            ],
+            "Policy Downloads": [
+                "HR Manual",
+                "Specific Policy Documents"
+            ]
+        },
+        "Support": {
+            "HR Support": [
+                "Helpdesk",
+                "Contact HR",
+                "FAQs"
+            ],
+            "General Queries": [
+                "Ask Anything?"
+            ]
+        }
+    }
+}

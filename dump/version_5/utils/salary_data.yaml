@@ -1,0 +1,357 @@
+paysheets: 
+  # 'EMP_ID' : 
+  #   type: str
+  #   category: primary_key
+  #   use: to access the user record
+  # 'Name' : 
+  #   type: str
+  #   category: primary_key
+  #   use: name of the user
+  'DOJ' : 
+    type: date
+    category: user data
+    use: date of joining
+  'Relieved Date':
+    type: date
+    category: user data
+    use: date of relieving
+  'Department':
+    type: str
+    category: user data
+    use: department of the user (Sales, Finance, HR, etc)
+  'Designation':
+    type: str
+    category: user data
+    use: designation of the user (Manager, Executive, Team Lead, Sr. Executive, etc)
+  'Bank name':
+    type: str
+    category: user data
+    use: name of the bank (ICICI, HDFC, SBI, etc)
+  'Bank Ac No':
+    type: str
+    category: user data
+    use: bank account number
+  'IFSC EMP_ID':
+    type: str
+    category: user data
+    use: IFSC EMP_ID of the bank
+  'Resigned Date':
+    type: date
+    category: user data
+    use: date of resignation
+  'Emp Worked days':
+    type: int
+    category: user data
+    use: number of days worked by the user
+  'LOP Days'
+    type: int
+    category: user data
+    use: number of days of leave without pay
+  'RLOP'
+    type: int
+    category: user data
+    use: number of days of regular leave without pay
+  'BASIC':
+    type: int
+    category: user data
+    use: basic salary of the user
+  'House Rent Allowance':
+    type: int
+    category: user data
+    use: house rent allowance of the user
+  'Conveyance Allowance':
+    type: int
+    category: user data
+    use: conveyance allowance of the user
+  'Special Allowance':
+    type: int
+    category: user data
+    use: special allowance of the user
+  'Field Expenses':
+    type: int
+    category: user data
+    use: field expenses of the user
+  'Total Earnings':
+    type: int
+    category: user data
+    use: total earnings of the user
+  'Income Tax':
+    type: int
+    category: user data
+    use: income tax of the user
+  'Other Deductions'  
+    type: int
+    category: user data
+    use: other deductions of the user
+  'Provident Fund'  
+    type: int
+    category: user data
+    use: provident fund of the user
+  'Total Deductions'  
+    type: int
+    category: user data
+    use: total deductions of the user
+  'NETPAY'  
+    type: int
+    category: user data
+    use: net pay of the user
+  'Remarks'  
+    type: str
+    category: user data
+    use: remarks of the user
+
+it_record:  
+  # 'EMP_ID': 
+  #   type: str
+  #   category: primary_key
+  #   use: to access the user record
+  # 'Name': 
+  #   type: str
+  #   category: primary_key
+  #   use: name of the user
+  'Total Earnings':
+    type: int
+    category: user data
+    use: total earnings of the user
+  'Jul-24': 
+    type: int
+    category: user data
+    use: earnings for July 2024
+  'Aug-24': 
+    type: int
+    category: user data
+    use: earnings for August 2024
+  'Diff': 
+    type: int
+    category: user data
+    use: difference between Jul-24 and Aug-24 earnings
+  'Remarks': 
+    type: str
+    category: user data
+    use: remarks or additional notes for the user's pay record
+
+ctc_record:
+  # 'Emp_EMP_ID': 
+  #   type: str
+  #   category: primary_key
+  #   use: to access the user record
+  # 'Emp_Name': 
+  #   type: str
+  #   category: primary_key
+  #   use: name of the employee
+  'Working days':
+    type: int
+    category: user data
+    use: number of working days for the employee in the given period
+  'Annual CTC PA':
+    type: int
+    category: user data
+    use: annual cost to company (CTC) for the employee
+  'VP':
+    type: int
+    category: user data
+    use: variable pay of the employee (if applicable)
+  'CTC PM':
+    type: int
+    category: user data
+    use: monthly cost to company (CTC) for the employee
+  'PF_Empr':
+    type: int
+    category: user data
+    use: employer's contribution to the provident fund
+  'ESIC_Empr':
+    type: int
+    category: user data
+    use: employer's contribution to the Employee State Insurance Corporation
+  'Monthly Fixed CTC':
+    type: int
+    category: user data
+    use: fixed monthly cost to company (CTC) for the employee
+  'Proration Earnings':
+    type: int
+    category: user data
+    use: earnings based on proration (calculated based on working days or prorated months)
+  'Total Earnings':
+    type: int
+    category: user data
+    use: total earnings for the employee in the given period
+  'Bonus':
+    type: int
+    category: user data
+    use: bonus received by the employee in the period
+  'Difference':
+    type: int
+    category: user data
+    use: difference between expected and actual earnings
+  'Field Expenses & Salary Advance Recovery':
+    type: int
+    category: user data
+    use: recovery or adjustment for field expenses or salary advances
+  'Final Difference':
+    type: int
+    category: user data
+    use: final difference after adjustments such as field expenses and salary advances
+
+
+pf_record:
+  # 'EMP_ID': 
+  #   type: str
+  #   category: primary_key
+  #   use: to access the user record
+  # 'Name': 
+  #   type: str
+  #   category: primary_key
+  #   use: name of the employee
+  'Basic Salary':
+    type: int
+    category: user data
+    use: basic salary of the employee
+  'BASIC Arrears':
+    type: int
+    category: user data
+    use: arrears related to the basic salary
+  'PF Wages':
+    type: int
+    category: user data
+    use: wages considered for provident fund (PF) calculation
+  'PF as per calculation':
+    type: int
+    category: user data
+    use: provident fund amount calculated based on the wages
+  'As per salary Sheet':
+    type: int
+    category: user data
+    use: provident fund as listed in the salary sheet
+  'Diff':
+    type: int
+    category: user data
+    use: difference between PF calculated and PF as per salary sheet
+  'Remarks':
+    type: str
+    category: user data
+    use: remarks or additional notes related to provident fund calculations
+
+master_record:
+  # 'Emp_EMP_ID': 
+  #   type: str
+  #   category: primary_key
+  #   use: to access the user record
+  # 'Emp_Name': 
+  #   type: str
+  #   category: primary_key
+  #   use: name of the employee
+  'BASIC':
+    type: int
+    category: user data
+    use: basic salary of the employee
+  'House Rent Allowance':
+    type: int
+    category: user data
+    use: house rent allowance provided to the employee
+  'Conveyance Allowance':
+    type: int
+    category: user data
+    use: conveyance allowance provided to the employee
+  'Special Allowance':
+    type: int
+    category: user data
+    use: special allowance given to the employee
+  'PF Employer':
+    type: int
+    category: user data
+    use: provident fund contribution by the employer
+  'CTC PM':
+    type: int
+    category: user data
+    use: monthly cost to company (CTC) for the employee
+  'FIX CTC':
+    type: int
+    category: user data
+    use: fixed monthly cost to company (CTC) for the employee
+  'VP':
+    type: int
+    category: user data
+    use: variable pay provided to the employee
+  'CTC PA':
+    type: int
+    category: user data
+    use: total annual cost to company (CTC) for the employee
+
+deduction_details:
+  # 'EMP_ID': 
+  #   type: str
+  #   category: primary_key
+  #   use: to access the user record
+  # 'Name': 
+  #   type: str
+  #   category: primary_key
+  #   use: name of the employee
+  'Deductions':
+    type: int
+    category: user data
+    use: total deductions from the employee's salary
+  'Reason':
+    type: str
+    category: user data
+    use: reason for the deductions (e.g., tax, insurance, loans, etc.)
+
+reimbursement_details:
+  # 'EMP_ID': 
+  #   type: str
+  #   category: primary_key
+  #   use: to access the user record
+  # 'Name': 
+  #   type: str
+  #   category: primary_key
+  #   use: name of the employee
+  'Reimbursements':
+    type: int
+    category: user data
+    use: total reimbursements provided to the employee
+  'Jul-24':
+    type: int
+    category: user data
+    use: reimbursement amount for July 2024
+  'Aug-24':
+    type: int
+    category: user data
+    use: reimbursement amount for August 2024
+  'Diff':
+    type: int
+    category: user data
+    use: difference in reimbursements between July 2024 and August 2024
+  'Remarks':
+    type: str
+    category: user data
+    use: additional notes or remarks related to the reimbursements
+
+
+monthly_reimbursement_details:
+  # 'EMP_ID': 
+  #   type: str
+  #   category: primary_key
+  #   use: to access the user record
+  # 'Name': 
+  #   type: str
+  #   category: primary_key
+  #   use: name of the employee
+  'amount':
+    type: int
+    category: user data
+    use: reimbursement amount for July 2024
+  'Bill No':
+    type: str
+    category: user data
+    use: bill number associated with the reimbursement
+  'Reason':
+    type: str
+    category: user data
+    use: reason for the reimbursement (e.g., travel expenses, medical expenses)
+  'Approval Status':
+    type: str
+    category: user data
+    use: status of the approval (e.g., "Approved", "Pending", "Rejected")
+  'Remark':
+    type: str
+    category: user data
+    use: additional notes or remarks regarding the reimbursement request

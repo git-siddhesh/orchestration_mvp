@@ -1,0 +1,4 @@
+.env
+vector_store_data/
+markdown_data/
+**/__pycache__/

@@ -1,0 +1,120 @@
+bonus_amount:
+  input_vars:
+    user_id: user employement id
+    fiscal_year: fiscal year (2024, 2025, etc.)
+  api_to_be_called: get_user_bonus_details
+  use: get the bonus amount of the user for the given fiscal year
+
+increment_details:
+  input_vars:
+    user_id: user's employement id
+    fiscal_year: fiscal year (2024, 2025, etc.)
+  api_to_be_called: get_user_increment_details
+  use: get the increment details of the user for the given fiscal year
+
+travel_expense_claim_status:
+  input_vars:
+    user_id: user's employement id
+    claim_id: claim id of the travel expense claim [optional]
+  api_to_be_called: get_travel_claim_status
+  use: get the status of the travel expense claim
+
+local_conveyance_limit:
+  input_vars:
+    user_id: user's employement id
+    location: location for the local conveyance limit (city)
+  api_to_be_called: get_local_conveyance_limit
+  use: get the local conveyance limit for the given location
+
+staff_welfare_eligibility:
+  input_vars:
+    user_id: user's employement id
+    employment_type: employment type  (full-time, part-time, contract)
+  api_to_be_called: get_staff_welfare_eligibility
+  use: get the staff welfare eligibility of the user
+
+rnr_rewards:
+  input_vars:
+    user_id: user's employement id
+    achievement_id: achievement id of the rewards and recognition [optional]
+  api_to_be_called: get_rnr_rewards_details
+  use: get the rewards and recognition rewards details of the user
+
+incentive_details:
+  input_vars:
+    user_id: user's employement id
+    fiscal_year: fiscal year (2024, 2025, etc.)
+    performance_rating: performance rating of the user (1-5, 5 being the highest)
+  api_to_be_called: get_user_incentive_details
+  use: get the incentive details of the user for the given fiscal year and performance rating
+
+it_damages_recovery_amount:
+  input_vars:
+    user_id: user's employement id
+    item_damaged: item damaged (laptop, mobile, etc.)
+  api_to_be_called: get_it_damages_recovery_amount
+  use: get the IT damages recovery amount of the user for the given item damaged
+
+tax_deductions:
+  input_vars:
+    user_id: user's employement id
+    fiscal_year: fiscal year (2024, 2025, etc.)
+  api_to_be_called: get_user_tax_deductions
+  use: get the tax deductions of the user for the given fiscal year
+
+pf_contribution:
+  input_vars:
+    user_id: user's employement id
+    fiscal_year: fiscal year (2024, 2025, etc.)
+  api_to_be_called: get_pf_contribution_details
+  use: get the PF contribution details of the user for the given fiscal year
+
+salary_breakdown:
+  input_vars:
+    user_id: user's employement id
+    month: month for the salary breakdown (Jan, Feb, etc.)
+  api_to_be_called: get_salary_breakdown
+  use: get the salary breakdown of the user for the given month
+
+payroll_status:
+  input_vars:
+    user_id: user's employement id
+    month: month for the payroll status (Jan, Feb, etc.)
+  api_to_be_called: get_user_payroll_status
+  use: get the payroll status of the user for the given month
+
+international_payroll_details:
+  input_vars:
+    user_id: user's employement id
+    country: country for the international payroll details (USA, UK, India, etc.)
+  api_to_be_called: get_international_payroll_details
+  use: get the international payroll details of the user for the given country
+
+travel_policy_limits:
+  input_vars:
+    user_id: user's employement id
+    travel_type: travel type (domestic, international, business, etc.)
+  api_to_be_called: get_travel_policy_limits
+  use: get the travel policy limits of the user for the given travel type
+
+equity_comparison:
+  input_vars:
+    user_id: user's employement id
+    department: department of the user (HR, IT, etc.)
+    position: position in the department (manager, developer-2, etc.)
+  api_to_be_called: get_salary_equity_comparison
+  use: get the salary equity comparison of the user for the given department and position
+
+leave_balance:
+  input_vars:
+    user_id: user's employement id
+    leave_type: leave type (sick, casual, earned, etc.) [optional]
+  api_to_be_called: get_leave_balance
+  use: get the leave balance of the user for the given leave type
+
+max_encashable_leave:
+  input_vars:
+    user_id: user's employement id
+    leave_type: leave type (sick, casual, earned, etc.) [optional]
+  api_to_be_called: get_max_encashable_leave
+  use: get the maximum encashable leave of the user for the given leave type

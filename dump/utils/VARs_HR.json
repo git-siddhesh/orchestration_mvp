@@ -1,0 +1,69 @@
+{
+  "bonus_amount": {
+    "input_vars": {
+      "user_id": "user employement id",
+      "fiscal_year": "fiscal year"
+    },
+    "api_to_be_called": "get_user_bonus_details",
+    "use": "To get the bonus amount of the user for the given fiscal year"
+  },
+  "increment_details": {
+    "input_vars": ["user_id", "fiscal_year"],
+    "api_to_be_called": "get_user_increment_details",
+    "use": "To get the increment details of the user for the given fiscal year"
+
+  },
+  "travel_expense_claim_status": {
+    "input_vars": ["user_id", "claim_id"],
+    "api_to_be_called": "get_travel_claim_status",
+    "use": 
+  },
+  "local_conveyance_limit": {
+    "input_vars": ["user_id", "location"],
+    "api_to_be_called": "get_local_conveyance_limit"
+  },
+  "staff_welfare_eligibility": {
+    "input_vars": ["user_id", "employment_type"],
+    "api_to_be_called": "get_staff_welfare_eligibility"
+  },
+  "rnr_rewards": {
+    "input_vars": ["user_id", "achievement_id"],
+    "api_to_be_called": "get_rnr_rewards_details"
+  },
+  "incentive_details": {
+    "input_vars": ["user_id", "fiscal_year", "performance_rating"],
+    "api_to_be_called": "get_user_incentive_details"
+  },
+  "it_damages_recovery_amount": {
+    "input_vars": ["user_id", "item_damaged"],
+    "api_to_be_called": "get_it_damages_recovery_amount"
+  },
+  "tax_deductions": {
+    "input_vars": ["user_id", "fiscal_year"],
+    "api_to_be_called": "get_user_tax_deductions"
+  },
+  "pf_contribution": {
+    "input_vars": ["user_id", "fiscal_year"],
+    "api_to_be_called": "get_pf_contribution_details"
+  },
+  "salary_breakdown": {
+    "input_vars": ["user_id", "month"],
+    "api_to_be_called": "get_salary_breakdown"
+  },
+  "payroll_status": {
+    "input_vars": ["user_id", "month"],
+    "api_to_be_called": "get_user_payroll_status"
+  },
+  "international_payroll_details": {
+    "input_vars": ["user_id", "country"],
+    "api_to_be_called": "get_international_payroll_details"
+  },
+  "travel_policy_limits": {
+    "input_vars": ["user_id", "travel_type"],
+    "api_to_be_called": "get_travel_policy_limits"
+  },
+  "equity_comparison": {
+    "input_vars": ["user_id", "department", "position"],
+    "api_to_be_called": "get_salary_equity_comparison"
+  }
+}

@@ -1,0 +1,219 @@
+bonus_amount_calculation:
+  input_vars:
+    user_id: user's employment id
+    fiscal_year: fiscal year (2024, 2025, etc.)
+  api_to_be_called: calculate_bonus_amount
+  use: calculate the bonus amount for the user based on their performance and fiscal year
+
+increment_calculation:
+  input_vars:
+    user_id: user's employment id
+    fiscal_year: fiscal year (2024, 2025, etc.)
+  api_to_be_called: calculate_increment
+  use: calculate the increment amount for the user based on performance and policies
+
+local_conveyance_adjustment:
+  input_vars:
+    user_id: user's employment id
+    location: location for conveyance adjustment
+    adjustment_reason: reason for the adjustment
+  api_to_be_called: adjust_local_conveyance
+  use: adjust local conveyance limit based on new location or updated policies
+
+incentive_calculation:
+  input_vars:
+    user_id: user's employment id
+    fiscal_year: fiscal year (2024, 2025, etc.)
+    performance_rating: performance rating of the user (1-5)
+  api_to_be_called: calculate_incentive
+  use: calculate the incentive for the user based on fiscal year and performance rating
+
+tax_deduction_calculation:
+  input_vars:
+    user_id: user's employment id
+    fiscal_year: fiscal year (2024, 2025, etc.)
+    income_details: user's income details for the fiscal year
+  api_to_be_called: calculate_tax_deductions
+  use: calculate tax deductions for the user based on their income and fiscal policies
+
+pf_contribution_adjustment:
+  input_vars:
+    user_id: user's employment id
+    fiscal_year: fiscal year (2024, 2025, etc.)
+    adjustment_reason: reason for adjustment
+  api_to_be_called: adjust_pf_contribution
+  use: adjust the PF contribution for the user based on updated policies or corrections
+
+salary_disbursement_processing:
+  input_vars:
+    user_id: user's employment id
+    month: month for salary processing (Jan, Feb, etc.)
+    adjustments: any salary adjustments (deductions, bonuses, etc.)
+  api_to_be_called: process_salary_disbursement
+  use: process the salary disbursement for the user based on monthly breakdown and adjustments
+
+leave_encashment_processing:
+  input_vars:
+    user_id: user's employment id
+    leave_type: leave type (sick, casual, earned, etc.)
+    encashment_request: number of leaves requested for encashment
+  api_to_be_called: process_leave_encashment
+  use: process the leave encashment request based on balance and eligibility
+
+calc_total_reimbursement_for_dept:
+  input_vars:
+    department: "Name of the department for which total reimbursements need to be calculated"
+    month: "The month for which reimbursements are to be calculated (e.g., 'Jul-24')"
+  output_vars:
+    total_reimbursement: "Total reimbursement amount for the specified department and month"
+  use: "Calculates the total reimbursement for all employees in a given department for a specific month"
+
+calc_net_salary_of_emp:
+  input_vars:
+    emp_code: "Unique identifier for the employee whose net salary needs to be calculated"
+    month: "The month for which the net salary is to be calculated (e.g., 'Jul-24')"
+  output_vars:
+    net_salary: "Net salary of the specified employee for the given month"
+  use: "Calculates the net salary of an employee by subtracting total deductions from total earnings for a specified month"
+
+
+api_name: create_paysheet_entry
+  input_vars:
+    EMP_ID: "Unique identifier for the employee"
+    Name: "Name of the employee"
+    DOJ: "Date of joining the company"
+    Department: "Department of the employee"
+    Designation: "Designation of the employee"
+  output_vars:
+    status: "Operation status (success or failure)"
+    message: "Description of the operation result"
+  use: "To create a new paysheet entry for an employee"
+
+api_name: update_paysheet_details
+  input_vars:
+    EMP_ID: "Unique identifier for the employee"
+    Department: "Updated department of the employee"
+    Designation: "Updated designation of the employee"
+  output_vars:
+    status: "Operation status (success or failure)"
+    message: "Description of the operation result"
+  use: "To update the paysheet details of an employee"
+
+
+api_name: calculate_net_pay
+  input_vars:
+    EMP_ID: "Unique identifier for the employee"
+    BASIC: "Basic salary of the employee"
+    House_Rent_Allowance: "House rent allowance of the employee"
+    Income_Tax: "Income tax deductions"
+  output_vars:
+    EMP_ID: "Unique identifier for the employee"
+    NETPAY: "Calculated net pay for the employee"
+  use: "To calculate the net pay of an employee"
+
+
+api_name: generate_it_summary
+  input_vars:
+    EMP_ID: "Unique identifier for the employee"
+  output_vars:
+    EMP_ID: "Unique identifier for the employee"
+    Total_Earnings: "Total earnings for the employee"
+    Jul-24: "Earnings for July 2024"
+    Aug-24: "Earnings for August 2024"
+    Diff: "Difference in earnings between July and August"
+  use: "To fetch a summary of IT-related earnings for an employee"
+
+api_name: update_it_record
+  input_vars:
+    EMP_ID: "Unique identifier for the employee"
+    Jul-24: "Updated earnings for July 2024"
+    Remarks: "Updated remarks for the record"
+  output_vars:
+    status: "Operation status (success or failure)"
+    message: "Description of the operation result"
+  use: "To update IT record details of an employee"
+
+api_name: calculate_prorated_earnings
+  input_vars:
+    EMP_ID: "Unique identifier for the employee"
+    Working_days: "Number of working days in the given period"
+    Annual_CTC_PA: "Annual CTC of the employee"
+  output_vars:
+    Proration_Earnings: "Calculated prorated earnings based on input"
+  use: "To calculate prorated earnings for an employee"
+
+api_name: get_ctc_summary
+  input_vars:
+    EMP_ID: "Unique identifier for the employee"
+  output_vars:
+    EMP_ID: "Unique identifier for the employee"
+    Annual_CTC_PA: "Annual CTC of the employee"
+    Monthly_Fixed_CTC: "Fixed monthly CTC of the employee"
+    VP: "Variable pay component of the employee"
+  use: "To fetch the CTC details of an employee"
+
+
+api_name: validate_pf_contributions
+  input_vars:
+    EMP_ID: "Unique identifier for the employee"
+    PF_Wages: "Wages considered for PF calculation"
+    PF_as_per_calculation: "Calculated PF amount"
+    As_per_salary_Sheet: "PF amount from the salary sheet"
+  output_vars:
+    status: "Operation status (success or failure)"
+    valid: "Boolean indicating if contributions are valid"
+  use: "To validate the PF contributions of an employee"
+
+
+api_name: update_pf_remarks
+  input_vars:
+    EMP_ID: "Unique identifier for the employee"
+    Remarks: "Updated remarks for the PF record"
+  output_vars:
+    status: "Operation status (success or failure)"
+    message: "Description of the operation result"
+  use: "To update remarks for the PF record of an employee"
+
+
+api_name: add_deduction
+  input_vars:
+    EMP_ID: "Unique identifier for the employee"
+    Name: "Name of the employee"
+    Deductions: "Total deduction amount"
+    Reason: "Reason for the deductions"
+  output_vars:
+    status: "Operation status (success or failure)"
+    message: "Description of the operation result"
+  use: "To add a new deduction record for an employee"
+
+api_name: fetch_deductions
+  input_vars:
+    EMP_ID: "Unique identifier for the employee"
+  output_vars:
+    EMP_ID: "Unique identifier for the employee"
+    Deductions: "Total deduction amount"
+    Reason: "Reason for the deductions"
+  use: "To fetch deductions of an employee"
+
+
+api_name: submit_reimbursement_request
+  input_vars:
+    EMP_ID: "Unique identifier for the employee"
+    Reimbursements: "Total reimbursement amount"
+    Reason: "Reason for the reimbursement"
+    Remarks: "Additional notes or remarks"
+  output_vars:
+    status: "Operation status (success or failure)"
+    message: "Description of the operation result"
+  use: "To submit a new reimbursement request for an employee"
+
+api_name: get_monthly_reimbursements
+  input_vars:
+    EMP_ID: "Unique identifier for the employee"
+  output_vars:
+    amount: "Reimbursement amount for the month"
+    Bill_No: "Associated bill number"
+    Reason: "Reason for the reimbursement"
+    Approval_Status: "Current status of the reimbursement request"
+    Remark: "Additional notes or remarks"
+  use: "To fetch monthly reimbursement details of an employee"

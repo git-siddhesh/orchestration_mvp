@@ -1,0 +1,122 @@
+{
+    "policy_id": {
+        "input_vars": ["user_id", "age", "sum_assured", "policy_type"],
+        "api_to_be_called": "get_life_policy_options"
+    },
+    "policy_name": {
+        "input_vars": ["user_id", "age", "sum_assured", "policy_type"],
+        "api_to_be_called": "get_life_policy_options"
+    },
+    "premium": {
+        "input_vars": ["user_id", "age", "sum_assured", "policy_type"],
+        "api_to_be_called": "get_life_policy_options"
+    },
+    "benefits": {
+        "input_vars": ["user_id", "age", "sum_assured", "policy_type"],
+        "api_to_be_called": "get_life_policy_options"
+    },
+    "coverage": {
+        "input_vars": ["user_id", "policy_id"],
+        "api_to_be_called": "get_life_coverage_details"
+    },
+    "exclusions": {
+        "input_vars": ["user_id", "policy_id"],
+        "api_to_be_called": "get_life_coverage_details"
+    },
+    "riders": {
+        "input_vars": ["user_id", "policy_id"],
+        "api_to_be_called": "get_life_coverage_details"
+    },
+    "claim_limit": {
+        "input_vars": ["user_id", "policy_id"],
+        "api_to_be_called": "get_life_coverage_details"
+    },
+    "claim_id": {
+        "input_vars": ["user_id", "policy_id", "claim_reason", "documents"],
+        "api_to_be_called": "submit_life_claim_request"
+    },
+    "status": {
+        "input_vars": ["user_id", "policy_id", "claim_reason", "documents"],
+        "api_to_be_called": "submit_life_claim_request"
+    },
+    "expected_settlement": {
+        "input_vars": ["user_id", "policy_id", "claim_reason", "documents"],
+        "api_to_be_called": "submit_life_claim_request"
+    },
+    "premium_amount": {
+        "input_vars": ["user_id", "age", "policy_id", "payment_frequency"],
+        "api_to_be_called": "calculate_life_premium"
+    },
+    "payment_due_date": {
+        "input_vars": ["user_id", "age", "policy_id", "payment_frequency"],
+        "api_to_be_called": "calculate_life_premium"
+    },
+    "policy_comparison_table": {
+        "input_vars": ["user_id", "age", "family_members", "coverage_amount"],
+        "api_to_be_called": "compare_health_policies"
+    },
+    "best_option": {
+        "input_vars": ["user_id", "age", "family_members", "coverage_amount"],
+        "api_to_be_called": "compare_health_policies"
+    },
+    "hospital_list": {
+        "input_vars": ["user_id", "pincode", "policy_id"],
+        "api_to_be_called": "get_network_hospitals"
+    },
+    "cashless_eligibility": {
+        "input_vars": ["user_id", "pincode", "policy_id"],
+        "api_to_be_called": "get_network_hospitals"
+    },
+    "claim_status": {
+        "input_vars": ["user_id", "policy_id", "hospital_id", "treatment_details"],
+        "api_to_be_called": "submit_health_claim"
+    },
+    "policy_options": {
+        "input_vars": ["user_id", "vehicle_type", "vehicle_age", "coverage_amount"],
+        "api_to_be_called": "get_motor_policy_types"
+    },
+    "premium_breakdown": {
+        "input_vars": ["user_id", "vehicle_type", "vehicle_age", "coverage_amount"],
+        "api_to_be_called": "get_motor_policy_types"
+    },
+    "new_policy_id": {
+        "input_vars": ["user_id", "policy_id", "vehicle_condition_report"],
+        "api_to_be_called": "renew_motor_policy"
+    },
+    "eligibility_status": {
+        "input_vars": ["user_id", "income", "credit_score", "loan_amount"],
+        "api_to_be_called": "check_home_loan_eligibility"
+    },
+    "max_loan_amount": {
+        "input_vars": ["user_id", "income", "credit_score", "loan_amount"],
+        "api_to_be_called": "check_home_loan_eligibility"
+    },
+    "interest_rate": {
+        "input_vars": ["user_id", "income", "credit_score", "loan_amount"],
+        "api_to_be_called": "check_home_loan_eligibility"
+    },
+    "tax_saved": {
+        "input_vars": ["user_id", "investment_id", "income_details"],
+        "api_to_be_called": "calculate_tax_benefits"
+    },
+    "eligibility_sections": {
+        "input_vars": ["user_id", "investment_id", "income_details"],
+        "api_to_be_called": "calculate_tax_benefits"
+    },
+    "plan_id": {
+        "input_vars": ["user_id", "investment_amount", "age"],
+        "api_to_be_called": "get_pension_plan_options"
+    },
+    "returns_projection": {
+        "input_vars": ["user_id", "investment_amount", "age"],
+        "api_to_be_called": "get_pension_plan_options"
+    },
+    "reward_points": {
+        "input_vars": ["user_id", "card_id", "transaction_category"],
+        "api_to_be_called": "get_card_rewards"
+    },
+    "cashback_offered": {
+        "input_vars": ["user_id", "card_id", "transaction_category"],
+        "api_to_be_called": "get_card_rewards"
+    }
+}
