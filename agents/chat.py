@@ -19,7 +19,7 @@ class ChatBotBackend(Chat):
 
     async def chit_chat_detector(self, query: str, history: str) -> Tuple[bool, Any]:
         llm_query = f"Query: {query}\nChat history: {history}"
-        response = await self.llm_call(llm_query, use="detect_chit_chat")
+        response = await self.llm_call(llm_query, use="chitchat")
         if response["response_type"] == "1" or response["response_type"] == 1:
             return True, response["response"]
         return False, None
@@ -35,7 +35,7 @@ class ChatBotBackend(Chat):
         # )
 
         llm_query = f"User query: {query}\nChat history: {chat_history}"
-        response = await self.llm_call(llm_query, use="generate_SAQ_and_intent")
+        response = await self.llm_call(llm_query, use="saq_and_intent")
 
         self.conversation.intent = response["intent"]
         self.conversation.SAQ = response["saq"]
@@ -54,7 +54,7 @@ class ChatBotBackend(Chat):
         var_data = f"{api_data} {meta_data}"
         
         llm_query: str = f"query: {self.conversation.SAQ}\n User-Intent: {self.conversation.intent}\n Available data: {var_data}"
-        response: Dict[str, Any] = await self.llm_call(llm_query, use="api_evaluator")
+        response: Dict[str, Any] = await self.llm_call(llm_query, use="evaluate_api_reponse")
 
         if response["response_type"] == "direct":
             return ("direct", response["response"], None)
@@ -74,7 +74,7 @@ class ChatBotBackend(Chat):
 
         formatted_docs = "\n\n".join([ f"Document {i+1}:\nContent: {doc.page_content}" for i, doc in enumerate(docs)])
         rag_query = f"{query}\n\nRetrieved documents: {formatted_docs}"
-        response = await self.llm_call(rag_query, use="rag")
+        response = await self.llm_call(rag_query, use="rag_response")
 
         return response["response"], rag_docs
     

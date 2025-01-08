@@ -5,9 +5,8 @@ from utils.call_api_hr import *
 
 import yaml
 
-from packets import CounterQueryPayload
+from packets import CounterQueryPayload, Message, BotResponsePayload, Response, Query
 VARS = yaml.safe_load(open("files\\api_info.yaml", "r"))
-VARS = VARS['EXEC_APIS']
 
 
 # class APIAgent(Agent):
@@ -31,9 +30,9 @@ class APIAgent(Chat):#, Agent):
 
     async def detect_relevant_vars(self) -> Dict[str, Any]:
         # TODO: Get the relevant variables from the LLM model
-        output_vars: str = "\n".join([f"{key} : {value['use']}" for key, value in VARS.items() if value['use']])
+        output_vars: str = "\n".join([f"{key} \n - USE: {value['use']} \n - OUTPUT: {list(value['output_vars'].keys())}" for key, value in VARS.items()])
         llm_query: str = f"Query : {self.conversation.SAQ} \n Query Intent: {self.conversation.intent} \n Variables: {output_vars}"
-        relevant_vars = await self.llm_call(llm_query, use="detect_relevant_vars")
+        relevant_vars = await self.llm_call(llm_query, use="relevant_vars")
         return relevant_vars
 
 
@@ -42,11 +41,12 @@ class APIAgent(Chat):#, Agent):
         
         for slave_query in relevant_vars:
             for output_var in relevant_vars[slave_query]:
+                print("Output var:", output_var)
                 api_name: str = VARS[output_var]["api_to_be_called"]
                 # if a new api is found
                 if api_name not in self.apis:
                     self.apis[api_name] = {
-                        "input_vars": VARS['bonus_amount']["input_vars"],
+                        "input_vars": VARS[output_var]["input_vars"],
                         "output_vars": [output_var],
                     }
                     # check if the input_vars are already in the memory, if not add to the missing_vars
@@ -57,29 +57,9 @@ class APIAgent(Chat):#, Agent):
                 # if the api is already in the list, append the output_vars
                 elif output_var not in self.apis[api_name]["output_vars"]:
                     self.apis[api_name]["output_vars"].append(output_var)
-
-        for slave_query in relevant_vars:
-            for output_var in relevant_vars[slave_query]:
-                api_name: str = VARS[output_var]["api_to_be_called"]
-                # if a new api is found
-                if api_name not in self.apis:
-                    self.apis[api_name] = {
-                        "input_vars": VARS['bonus_amount']["input_vars"],
-                        "output_vars": [output_var],
-                    }
-                    # check if the input_vars are already in the memory, if not add to the missing_vars
-                    for var, use in self.apis[api_name]["input_vars"].items():
-                        if self.chat_session.user_data and (not self.chat_session.user_data.has_data(var)):
-                            self.missing_vars[var] = use
-
-                # if the api is already in the list, append the output_vars
-                elif output_var not in self.apis[api_name]["output_vars"]:
-                    self.apis[api_name]["output_vars"].append(output_var)
-
 
         print("+++++++++++++++ DATA +++++++++++++++")
         print(self.chat_session.user_data.to_str()) # type: ignore
-        print("++++++++++++++++++++++++++++++++++++")
             
 
     async def generate_counter_queries(self):
@@ -89,7 +69,7 @@ class APIAgent(Chat):#, Agent):
             print("Missing variables:", self.missing_vars.keys())
             input_vars = "\n".join([f"{key} : {value}" for key, value in self.missing_vars.items()])
             llm_query = f"User query: {self.conversation.SAQ} \n Query Intent: {self.conversation.intent} \n Missing variables: \n{input_vars}"
-            response = await self.llm_call(llm_query, use="get_missing_vars")
+            response = await self.llm_call(llm_query, use="counter_queries")
             
 
             self.counter_queries = [CounterQueryPayload(
@@ -118,6 +98,7 @@ class APIAgent(Chat):#, Agent):
 
     async def execute_apis(self):
         # TODO: Execute the APIs and update the memory with the output vars
+        print("+++++++++++++ EXECUTE APIS +++++++++++++")
         for api_name in self.apis:
             api_response: Dict[str, Any] = tools[api_name](**self.chat_session.user_data.get_all_data()) # type: ignore
             self.chat_session.user_data.api.output_data.update(api_response) # type: ignore
@@ -134,7 +115,7 @@ class APIAgent(Chat):#, Agent):
         var_data = f"{api_data} {meta_data}"
         
         llm_query: str = f"query: {self.conversation.SAQ}\n User-Intent: {self.conversation.intent}\n Available data: {var_data}"
-        response: Dict[str, Any] = await self.llm_call(llm_query, use="api_response_generation")
+        response: Dict[str, Any] = await self.llm_call(llm_query, use="api_response")
 
         payload = BotResponsePayload(bot_response=Response(text=response["response"]))
 
@@ -154,7 +135,7 @@ class APIAgent(Chat):#, Agent):
         print("### API_EVAL ###: API DATA: ", var_data)
         
         llm_query: str = f"query: {self.conversation.SAQ}\n User-Intent: {self.conversation.intent}\n Available data: {var_data}"
-        response: Dict[str, Any] = await self.llm_call(llm_query, use="api_evaluator")
+        response: Dict[str, Any] = await self.llm_call(llm_query, use="evaluate_api_reponse")
 
         return response
     

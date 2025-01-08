@@ -23,6 +23,6 @@ class RAGAgent(Chat):#, Agent):
 
         formatted_docs = "\n\n".join([ f"Document {i+1}:\nContent: {doc.page_content}" for i, doc in enumerate(docs)])
         rag_query = f"{query}\n\nRetrieved documents: {formatted_docs}"
-        response = await self.llm_call(rag_query, use="rag")
+        response = await self.llm_call(rag_query, use="rag_response")
 
         return response["response"], rag_docs

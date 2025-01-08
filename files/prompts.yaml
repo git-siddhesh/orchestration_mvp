@@ -61,71 +61,49 @@ chitchat: |
   **Input:**
 
 saq_and_intent: |
-  **Overview:**  
-  You are an intelligent system designed to improve a user query into a fully self-contained **Stand-Alone Question (SAQ)** and identify the **intent** behind it. 
-  The SAQ must include all necessary information, making it context-independent, while the intent should capture the user’s underlying goal clearly and accurately.
+  ### **Objective:**  
+  You are tasked with improving a user query into a fully self-contained **Stand-Alone Question (SAQ)** and identifying the **intent** behind it. The SAQ must preserve the user’s original goal and context while being complete and context-independent.
 
   ---
 
-  **Instructions:**  
+  ### **Instructions:**  
 
   1. **Understand the Input:**  
-    - **Current Query:** Analyze the query provided by the user.  
-    - **Chat History (if available):** Use the conversation history to fill in context or resolve ambiguities.
+    - **User Query:** The original query provided by the user.  
+    - **Chat History (if available):** Use the conversation history to clarify or resolve ambiguities in the query.
 
   2. **Generate the Stand-Alone Question (SAQ):**  
-    - Ensure the SAQ is complete, clear, and self-explanatory without requiring external context.  
-    - Fill in any missing information implied by the chat history or the query itself.  
-    - Avoid redundancy while ensuring that the SAQ retains all essential details.
+    - Ensure the SAQ is complete, clear, and self-contained.  
+    - The SAQ must preserve the **original purpose** of the user query, ensuring the wording reflects the user's intent accurately.  
+    - Avoid misinterpreting the query as a search for guidance or instructions unless explicitly stated.  
 
   3. **Identify the User Intent:**  
-    - Determine the explicit and implicit purpose of the user’s query.  
-    - Classify the intent as informational, transactional, troubleshooting, etc., and provide a concise explanation of the user’s goal.  
+    - Clearly determine the **explicit purpose** of the query.  
+    - The intent should directly represent the user's goal (e.g., fetching data, executing an action, or seeking specific information).
 
   4. **Output Format:**  
-    - Return the results as a JSON object with two keys:  
+    - Return a JSON object with two keys:  
       - `saq`: The improved Stand-Alone Question.  
-      - `intent`: A brief explanation of the user’s purpose or goal.  
+      - `intent`: A clear and concise description of the user's objective.  
+    ```json
+    {
+        "saq": "Improved stand-alone question capturing the original query intent.",
+        "intent": "Description of the user's goal."
+    }
+    ```
 
   ---
 
-  **Output Format Example:**  
-  ```json
-  {
-      "saq": "What is the premium amount and due date for my policy with ID 12345?",
-      "intent": "The user wants to know the premium amount and the due date for a specific policy."
-  }
-  ```
+  ### **Examples:**  
 
-  ---
-
-  **Guidelines:**  
-
-  1. **Self-Contained SAQ:**  
-    - The SAQ must be context-independent and understandable without any prior knowledge of the conversation.  
-
-  2. **Accurate Intent:**  
-    - Reflect the true purpose behind the query, including implicit objectives if they are discernible.  
-
-  3. **Precision and Clarity:**  
-    - Avoid introducing unnecessary details or modifying the user’s original request beyond clarification or enhancement.
-
-  4. **Handling Ambiguities:**  
-    - If the query is unclear, leverage the conversation history to resolve ambiguities.  
-    - If no history is available, then paraphrase the input query to proper SAQ (do not make any assumption).
-
-  ---
-
-  **Example Scenarios and Outputs:**  
-
-  1. **Query with Sufficient Context:**  
-    - **Input Query:** "What’s the premium amount for my policy?"  
-    - **Chat History:** "I have a policy with ID 12345."  
+  1. **Explicit Request:**  
+    - **Input Query:** "get me my paysheet"  
+    - **Chat History:** ""  
     - **Output:**  
       ```json
       {
-          "saq": "What is the premium amount for my policy with ID 12345?",
-          "intent": "The user wants to know the premium amount for a specific policy."
+          "saq": "Can you fetch my paysheet?",
+          "intent": "The user wants to retrieve their paysheet."
       }
       ```
 
@@ -140,29 +118,29 @@ saq_and_intent: |
       }
       ```
 
-  3. **Standalone Query with No History:**  
-    - **Input Query:** "reset my password?"  
+  3. **Guidance Request:**  
+    - **Input Query:** "How can I access my paysheet?"  
     - **Chat History:** ""  
     - **Output:**  
       ```json
       {
-          "saq": "How can I reset my password for the system?",
-          "intent": "The user wants instructions to reset their password."
-      }
-      ```
-
-  4. **Clarification Required:**  
-    - **Input Query:** "When will it be done?"  
-    - **Chat History:** ""  
-    - **Output:**  
-      ```json
-      {
-          "saq": "When will the task be completed?",
-          "intent": "The user wants to know the completion time for a task or request they have submitted."
+          "saq": "How can I access my paysheet from the system?",
+          "intent": "The user wants to know the process for accessing their paysheet."
       }
       ```
 
   ---
+
+  ### **Guidelines:**  
+  1. Focus on Accuracy
+    - Ensure the SAQ reflects the user’s **original query purpose** without changing its meaning.  
+  2. Preserve the Original Goal
+  3. Handle Ambiguities with Care 
+    - If no history is available, rewrite the query into a proper SAQ without assuming extra details.
+  4. Avoid Overgeneralization
+
+  ---
+
   ** Input ** :
 
 pipeline: |
@@ -250,6 +228,200 @@ pipeline: |
   3. **Consistent output format** 
 
   ---
+pipeline_api_rag: |
+  ### **Objective:**  
+  Your task is to analyze the input query, intent, and the list of available APIs to determine the appropriate processing pipeline.  
+
+  ---
+
+  ### **Instructions:**  
+
+  1. **Understand the Input Data:**  
+    - **Query:** The user's input that needs to be processed.  
+    - **Intent:** The goal or purpose behind the query.  
+    - **Executable APIs:** The list of APIs available for specific requests or actions.
+
+  2. **Determine the Pipeline:**  
+    - **`EXEC_API`:**  
+      - Select this pipeline if the query explicitly requires data retrieval, manipulation, or execution of an action using an available API.  
+      - Examples include fetching records, updating details, or processing specific requests.  
+    - **`RAG`:**  
+      - Select this pipeline if the query requires information retrieval or content generation based on 
+        external documents, 
+        pre-existing knowledge, 
+        guidelines,
+        steps, 
+        or summarization tasks.
+
+  3. **Ensure Accuracy:**  
+    - Match the intent and query closely with the purpose of the available APIs.  
+    - If the query aligns with any API in the `Executable APIs` list, choose `EXEC_API`.  
+    - RAG can be used general purpose user questions that require a more detailed response.
+
+  4. **Output Format:**  
+    - Provide the decision in JSON format with a clear explanation:  
+    ```json
+    {
+        "pipeline": "EXEC_API" | "RAG",
+        "reasoning": "Explanation for why the selected pipeline is appropriate."
+    }
+    ```
+
+  ---
+
+  ### **Examples:**  
+
+  1. **Query Requiring API Execution:**  
+    - **Input:**  
+      ```json
+      {
+        "query": "How can I access my paysheet?",
+        "intent": "The user wants to know the process for accessing their paysheet.",
+        "executable_apis": {
+          "user_paysheet": "To fetch the paysheet details of a user.",
+          "bonus_amount_calculation": "Calculate the bonus amount for the user based on their performance and fiscal year."
+        }
+      }
+      ```
+    - **Output:**  
+      ```json
+      {
+          "pipeline": "EXEC_API",
+          "reasoning": "The query requires fetching the paysheet details using the `user_paysheet` API, which is directly relevant to the intent."
+      }
+      ```
+
+  2. **Query Requiring Retrieval-Augmented Generation:**  
+    - **Input:**  
+      ```json
+      {
+        "query": "Summarize the recent policy changes regarding employee insurance.",
+        "intent": "The user wants a summary of recent changes in insurance policies.",
+        "executable_apis": {
+          "get_policy_details": "Fetch specific policy details for an employee."
+        }
+      }
+      ```
+    - **Output:**  
+      ```json
+      {
+          "pipeline": "RAG",
+          "reasoning": "The query requires generating a summary of policy changes, which is not addressed by the available APIs."
+      }
+      ```
+
+  ---
+
+  ### **Guidelines:**  
+
+  1. **Match Intent with APIs:** Prioritize API execution if the query aligns with any listed API.  
+  2. **Avoid Assumptions:** Do not infer tasks or pipelines not explicitly required by the query or intent.  
+  3. **RAG:** Use the `RAG` pipeline only if no transactional query is asked or the task demands retrieval-based generation.  
+
+  ---
+
+  **Input:**
+
+predefined_queries: |
+  ### **Overview:**
+  You are an intelligent system, based on the user's query and intent, and some specific predefined sql query name,
+  your task is to analyze the input data and determine if the none or some of the predefined sql query names are relevant to the user query.
+  And these sql query names are directly or indirectly related to resolving the user query satisfying the user intent.
+
+  ---
+
+  ### Input Details:
+
+  - **User Query:** The query provided by the user.
+  - **Query Intent:** The user's intent derived from the query and context.
+  - **Predefined SQL Query Name:** A list of predefined SQL query name that can be used to fetch relevant data.
+
+  ---
+
+  ### Output Format:
+
+  Return the output as a JSON object with the following structure:
+
+  ```json
+  {
+      "relevant_queries": ["SQL Query Name 1", "SQL Query Name 2", ...] or [] if none are relevant,
+      "reasoning": "Brief explanation of why the selected queries are relevant."
+  }
+  ```
+
+  ---
+  ### **Examples:**
+
+  1. **Query with Direct Relevance to SQL Queries:**
+    - **Input:**
+      - **User Query:** "What is the payslip for the month of June 2022?"
+      - **Query Intent:** "The user wants to view the payslip for a specific month."
+      - **Predefined SQL Queries:**
+        paysheet : To returns the paysheet of an employee based on the employee code
+        total_leave : To return the total leave taken by an employee vs the total leave available for the employee
+
+    - **Output:**
+      ```json
+      {
+          "relevant_queries": ["paysheet"],
+          "reasoning": "The query directly relates to fetching the paysheet data for a specific month."
+      }
+      ```
+
+  2. **Query with Indirect Relevance to SQL Queries:**
+    - **Input:**
+      - **User Query:** "Why is there a other deduction in my salary this month?"
+      - **Query Intent:** "The user wants to understand the deductions in their salary."
+      - **Predefined SQL Queries:**
+        paysheet : To returns the paysheet of an employee based on the employee code
+        total_leave : To return the total leave taken by an employee vs the total leave available for the employee
+
+    - **Output:**
+      ```json
+      {
+          "relevant_queries": ["paysheet"],
+          "reasoning": "The query indirectly relates to understanding the salary deductions, which can be found in the paysheet data."
+      }
+      ```
+
+  3. **Query with No Relevance to SQL Queries:**
+    - **Input:**
+      - **User Query:** "How many total travel reimbursements have I claimed this year?"
+      - **Query Intent:** "The user wants to know the total travel reimbursements claimed."
+      - **Predefined SQL Queries:**
+        paysheet : To returns the paysheet of an employee based on the employee code
+        total_leave : To return the total leave taken by an employee vs the total leave available for the employee
+
+    - **Output:**
+      ```json
+      {
+          "relevant_queries": [],
+          "reasoning": "The travel reimbursements are not directly related to the predefined SQL queries provided."
+      }
+      ```
+
+  ---
+
+  ### **Guidelines:**
+
+  1. **Relevance to User Query:**  
+    - Select the predefined SQL queries that are directly or indirectly related to resolving the user query.
+
+  2. **Justifiable Reasoning:**
+    - Provide a clear and concise explanation of why the selected queries are relevant to the user query and intent.
+
+  3. **Consistent Output Format:**
+    - Ensure the output follows the specified JSON structure consistently.
+
+  ---
+
+  ### IMPORTANT NOTE:
+
+  The predefined SQL queries may not be directly related to the user query but can be indirectly related to the user query based on the context and intent of the query.
+  Make a plan to resolve the user query then decide which predefined SQL queries are relevant to the user query. [No need to mention the plan]
+
+  ---
+  ** Input ** :
 
 relevant_vars: |
   ### **Overview:**  
@@ -302,6 +474,60 @@ relevant_vars: |
   {
     "Whether user is eligible to encash leaves or not": ["staff_welfare_eligibility"],
     "Defined the user's current earning from the company": ["salary_breakdown", "equity_comparison"]
+  }
+  ```
+
+  ---
+
+  ### **Guidelines:**  
+
+  - **Focus on Relevance:** Only select variables that are clearly and directly related to answering the query.
+  - **Avoid Redundancy:** Do not include variables that are not explicitly necessary.
+  - **No Assumptions:** Use only the provided variables; do not introduce new ones or infer data not present in the input.
+
+  ---
+
+  ** Input ** :
+
+relevant_db_vars: |
+  ### **Overview:**  
+  Given a query with its intent, determine which variables from the provided list are directly relevant to fulfilling the query. 
+  Only use the variables listed in the input.
+
+  ---
+
+  ### **Instructions:**  
+
+  1. **Analyze the Query:** Understand the user's main objective based on the query and intent.
+  2. **Map Relevant Variables:** Identify and list only those variables from the given set that are essential to answering the query. Avoid introducing new variables or including unrelated ones.
+  3. **Output Format:**  
+    Provide the result in a JSON object where:
+    - The key represents a specific category of the variable.
+    - The value is a list of variables (selected from the input list) that are most closely related to answering that category.
+
+  ---
+
+  ### **Output Expectation:**  
+  Given the input query and intent, use proper reasoning for selecting the set of variables in each category. 
+  There may be multiple categories with corresponding sets of variables based on different reasoning.
+
+  ---
+
+  ### **Input Example:**  
+    "Query": "How many leaves am I eligible to encash in total?",
+    "Query_Intent": "The user wants to know the total number of leaves they can encash.",
+    "Variables"
+      paysheet : DOJ (Date of Joining), Department (Department of the use),
+      it_record : Total Earnings (Total earnings of the user), Total Deductions (Total deductions from the user's salary),
+      pf_record : PF Wages (Provident Fund wages of the user), PF Contribution (Provident Fund contribution by the user),
+
+  ---
+
+  ### **Expected Output Example:** 
+  ```json
+  {
+    "paysheet": ["DOJ"]
+    "pf_record": ["PF Wages", "PF Contribution"]
   }
   ```
 
@@ -546,35 +772,94 @@ extract_vars: |
   ** Input ** :
 
 api_response: |
-  **Overview:**
-  You are an intelligent system designed to evaluate whether the provided information is sufficient to directly answer a user query. 
-  Your task is to analyze the query, user intent, and the given data and generate a response based on the completeness of the information.
+  ### **Overview:**  
+  You are an intelligent system tasked with evaluating whether the provided data is sufficient to directly answer a user query.  
+  Your goal is to generate a precise and contextually appropriate response that satisfies the user's intent using only the given data.
 
   ---
 
-  **Input Details:**
-  - **query:** The question asked by the user.
-  - **user_intent:** The user’s intent derived from the query and context.
-  - **data:** Relevant data or facts provided for answering the query.
+  ### **Instructions:**  
+
+  1. **Input Details:**  
+    - **Query:** The user’s question or request.  
+    - **User Intent:** The underlying goal or purpose of the query.  
+    - **Available Data:** Relevant information provided for answering the query.  
+
+  2. **Response Generation:**  
+    - **If the data is sufficient:** Provide a direct and complete response.  
+      - Use a **Markdown table** format to present the data when applicable (e.g., when tabular data like paysheet details, metrics, or comparisons are provided).  
+    - **If the data is insufficient:** State clearly that the information provided is inadequate and specify what additional details are needed.
+
+  3. **Output Format:**  
+    - Return the result in the following JSON format:  
+    ```json
+    {
+        "response": "Markdown-formatted text or plain response based on sufficiency."
+    }
+    ```
 
   ---
 
-  **Output Details:**
-  ```json
-  {
-      "response": "Response text",
-  }
-  ```
+  ### **Guidelines:**  
+
+  1. **Markdown Table Preference:**  
+    - Whenever the query involves structured data (e.g., paysheets, performance metrics), present the information in a **Markdown table**.  
+
+  2. **Conciseness:**  
+    - Avoid unnecessary explanations or disclaimers if the data is sufficient.  
+
+  3. **Sufficiency Check:**  
+    - Evaluate the available data against the query and intent.  
+    - Do not speculate or assume information beyond the provided data.  
+
+  4. **Transparency:**  
+    - If the data is insufficient, clearly state what is missing without attempting to fill gaps.
+
+  5. **Relevance:**  
+    - Ensure the response aligns strictly with the query and user intent.  
 
   ---
 
-  **Guidelines:**
+  ### **Examples:**  
 
-  1. Reseponse text should be generated only from available data.
-  2. The Response should satisfy the user query and intent.
+  #### **Sufficient Data (Tabular):**  
+  - **Input:**  
+    ```json
+    {
+        "query": "Can you retrieve my paysheet for me?",
+        "user_intent": "The user wants to obtain their paysheet.",
+        "data": "Sl No.: 1.0, Code: 210, Name: Aman Kumar, ... NETPAY: 42037"
+    }
+    ```  
+
+  - **Output:**  
+    ```json
+    {
+        "response": "### Paysheet Details\n\n| Field               | Value       |\n|---------------------|-------------|\n| Name                | Aman Kumar  |\n| Total Earnings      | 44533       |\n| Total Deductions    | 2496        |\n| NETPAY              | 42037       |"
+    }
+    ```
 
   ---
-  **Input:**
+
+  #### **Insufficient Data:**  
+  - **Input:**  
+    ```json
+    {
+        "query": "What is my annual bonus?",
+        "user_intent": "The user wants to know their annual bonus.",
+        "data": "Sl No.: 1.0, Code: 210, Name: Aman Kumar, NETPAY: 42037."
+    }
+    ```  
+
+  - **Output:**  
+    ```json
+    {
+        "response": "The provided data does not include information about your annual bonus. Please provide bonus details to proceed."
+    }
+    ```
+
+  ---
+  ** Input ** :
 
 evaluate_api_reponse: |
   **Overview:**  

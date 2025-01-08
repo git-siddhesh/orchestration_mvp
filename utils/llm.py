@@ -5,31 +5,52 @@ load_dotenv(override=True)
 import json
 import re
 
-from prompts import Prompts
 
 from openai import OpenAI, AsyncOpenAI
 client = OpenAI()
 client_async = AsyncOpenAI()
+
+import yaml
+
+
+prompt_file = "files\\prompts.yaml"
+with open(prompt_file, encoding='utf-8') as file:
+    prompts = yaml.load(file, Loader=yaml.FullLoader)
+    
+# class Prompts:
+#     system_prompts = {
+#         "chitchat": prompts.get("chitchat"),
+#         "saq_and_intent": prompts.get("saq_and_intent"),
+#         "pipeline" : prompts.get("pipeline"),
+#         "relevant_vars": prompts.get("relevant_vars"),
+#         "counter_queries": prompts.get("counter_queries"),
+#         "extract_vars": prompts.get("extract_vars"),
+#         "api_response": prompts.get("api_response"),
+#         "evaluate_api_reponse": prompts.get("evaluate_api_reponse"),
+#         "rag_response": prompts.get("rag_response"),
+        
+#     }
+
 
 
 class LLMResponsePostProcessor:
     def __init__(self):
         pass
 
-    async def process(self, response: Any, use: str = "detect_relevant_vars")-> Any:
-        if use == "detect_relevant_vars":
+    async def process(self, response: Any, use: str = "relevant_vars")-> Any:
+        if use == "relevant_vars":
             return await self.process_slave_queries(response=response)
-        if use == "get_missing_vars":
+        if use == "counter_queries":
             return await self.process_missing_vars(response=response)
         if use == "extract_vars":
             return await self.process_extract_vars(response=response)
-        if use == "api_evaluator":
+        if use == "evaluate_api_reponse":
             return await self.process_api_evaluator(response=response)
-        if use == "detect_chit_chat":
+        if use == "chitchat":
             return await self.process_chit_chat(response=response)
-        if use == "rag":
+        if use == "rag_response":
             return await self.process_rag(response=response)
-        if use == "generate_SAQ_and_intent":
+        if use == "saq_and_intent":
             return await self.process_SAQ_and_intent(response=response)
         else:
             return await self.process_slave_queries(response=response)
@@ -114,7 +135,7 @@ class LLMResponsePostProcessor:
         return json_data
 
 
-class LLMAgent(Prompts, LLMResponsePostProcessor):
+class LLMAgent(LLMResponsePostProcessor): #, Prompts):
 
     # def __init__(self):
     model = "gpt-4o-mini"
@@ -123,7 +144,8 @@ class LLMAgent(Prompts, LLMResponsePostProcessor):
         response = await client_async.chat.completions.create(
             model=self.model,
             messages=[
-                {"role": "system", "content": self.system_prompts[use]},
+                # {"role": "system", "content": self.system_prompts[use]},
+                {"role": "system", "content": prompts.get(use)},
                 {"role": "user", "content": query},
             ],
             temperature=0.0,

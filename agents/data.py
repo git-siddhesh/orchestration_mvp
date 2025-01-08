@@ -6,8 +6,25 @@ from utils.call_api_hr import *
 import yaml
 
 from packets import CounterQueryPayload
-VARS = yaml.safe_load(open("files\\api_info.yaml", "r"))
-VARS = VARS['DATA_EXTRACT']
+# VARS = yaml.safe_load(open("files\\api_info.yaml", "r"))
+# VARS = VARS['DATA_EXTRACT']
+
+DB = yaml.safe_load(open(".\\files\\salary_data.yaml", "r"))
+vars: str = ""
+for key, value in DB.items():
+    vars = f"{vars} \n {key} : "
+    for k, v in value['vars'].items():
+        vars = f"{vars} {k} ({v['use']}), "
+
+print("VARS:", vars)
+
+DB2 = yaml.safe_load(open(".\\files\\predefined_queries.yaml", "r"))
+PREDEFINED_VARS  = {}
+for key, value in DB2.items():
+    PREDEFINED_VARS[key] = value['use']
+
+
+
 
 
 class DATAAgent(Chat):#, Agent):
@@ -15,62 +32,40 @@ class DATAAgent(Chat):#, Agent):
         print("DATABackend __init__")
         self.counter_queries: List[CounterQueryPayload] = []
         self.missing_vars: Dict[str, str] = {}
-        self.apis: Dict[str, Dict[str, Any]] = {}  # {api_name: {"input_vars": [], "output_vars": []}}
+        self.sql_tables: List[str] = []  # ["table"]
 
+    async def detect_relevant_predefined_queries(self) -> Tuple[str, Dict[str, Any]]:
+        # ALGO: Check if the user query is in the predefined queries list
+        llm_query: str = f"Query : {self.conversation.SAQ} \n Query Intent: {self.conversation.intent} \n Variables: {PREDEFINED_VARS}"
+        response: Dict[str, Any] = await self.llm_call(llm_query, use="predefined_queries")
+        return response
 
 
     async def detect_relevant_vars(self) -> Dict[str, Any]:
         # TODO: Get the relevant variables from the LLM model
-        output_vars: str = "\n".join([f"{key} : {value['use']}" for key, value in VARS.items() if value['use']])
-        llm_query: str = f"Query : {self.conversation.SAQ} \n Query Intent: {self.conversation.intent} \n Variables: {output_vars}"
-        relevant_vars = await self.llm_call(llm_query, use="detect_relevant_vars")
+        llm_query: str = f"Query : {self.conversation.SAQ} \n Query Intent: {self.conversation.intent} \n Variables: {vars}"
+        relevant_vars = await self.llm_call(llm_query, use="relevant_db_vars")
         return relevant_vars
+    
+    
+    async def resolve_missing_variables(self, relevant_vars: List[str]) -> None:
+        for section in relevant_vars:
+            input_params: Dict[str, Any] = DB[section]['input_params']
+            
+            for param in input_params.keys():
+                if self.chat_session.user_data and (not self.chat_session.user_data.has_data(param)):
+                    self.missing_vars[param] = input_params[param]
 
+            output_vars = DB2[section]['vars']
+            self.chat_session.user_data.api.output_data.update(output_vars)
 
-    async def resolve_api_dependencies(self, relevant_vars: Dict[str, Any])-> None: # type: ignore
-        # TODO: Find the missing variables and update the memory
+            self.sql_tables.append(section)
         
-        for slave_query in relevant_vars:
-            for output_var in relevant_vars[slave_query]:
-                api_name: str = VARS[output_var]["api_to_be_called"]
-                # if a new api is found
-                if api_name not in self.apis:
-                    self.apis[api_name] = {
-                        "input_vars": VARS['bonus_amount']["input_vars"],
-                        "output_vars": [output_var],
-                    }
-                    # check if the input_vars are already in the memory, if not add to the missing_vars
-                    for var, use in self.apis[api_name]["input_vars"].items():
-                        if self.chat_session.user_data and (not self.chat_session.user_data.has_data(var)):
-                            self.missing_vars[var] = use
-
-                # if the api is already in the list, append the output_vars
-                elif output_var not in self.apis[api_name]["output_vars"]:
-                    self.apis[api_name]["output_vars"].append(output_var)
-
-        for slave_query in relevant_vars:
-            for output_var in relevant_vars[slave_query]:
-                api_name: str = VARS[output_var]["api_to_be_called"]
-                # if a new api is found
-                if api_name not in self.apis:
-                    self.apis[api_name] = {
-                        "input_vars": VARS['bonus_amount']["input_vars"],
-                        "output_vars": [output_var],
-                    }
-                    # check if the input_vars are already in the memory, if not add to the missing_vars
-                    for var, use in self.apis[api_name]["input_vars"].items():
-                        if self.chat_session.user_data and (not self.chat_session.user_data.has_data(var)):
-                            self.missing_vars[var] = use
-
-                # if the api is already in the list, append the output_vars
-                elif output_var not in self.apis[api_name]["output_vars"]:
-                    self.apis[api_name]["output_vars"].append(output_var)
-
-
         print("+++++++++++++++ DATA +++++++++++++++")
         print(self.chat_session.user_data.to_str()) # type: ignore
         print("++++++++++++++++++++++++++++++++++++")
             
+        print("Missing variables:", self.missing_vars.keys())
 
     async def generate_counter_queries(self):
 
@@ -79,7 +74,7 @@ class DATAAgent(Chat):#, Agent):
             print("Missing variables:", self.missing_vars.keys())
             input_vars = "\n".join([f"{key} : {value}" for key, value in self.missing_vars.items()])
             llm_query = f"User query: {self.conversation.SAQ} \n Query Intent: {self.conversation.intent} \n Missing variables: \n{input_vars}"
-            response = await self.llm_call(llm_query, use="get_missing_vars")
+            response = await self.llm_call(llm_query, use="counter_queries")
             
 
             self.counter_queries = [CounterQueryPayload(
@@ -124,7 +119,7 @@ class DATAAgent(Chat):#, Agent):
         var_data = f"{api_data} {meta_data}"
         
         llm_query: str = f"query: {self.conversation.SAQ}\n User-Intent: {self.conversation.intent}\n Available data: {var_data}"
-        response: Dict[str, Any] = await self.llm_call(llm_query, use="api_response_generation")
+        response: Dict[str, Any] = await self.llm_call(llm_query, use="api_response")
 
         payload = BotResponsePayload(bot_response=Response(text=response["response"]))
 

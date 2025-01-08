@@ -1,0 +1,45 @@
+paysheet:
+  query: |
+    SELECT  
+    Code,
+    Designation, 
+    Department,
+    BASIC,
+    "House Rent Allowance",
+    "Conveyance Allowance",
+    "Special Allowance",
+    "Field Expenses",
+    "Total Earnings",
+    "Income Tax",
+    "Provident Fund",
+    "Other Deductions",
+    "Total Deductions",
+    "NETPAY",
+    "Remarks"
+    FROM 'paysheet' where Code == {code}
+
+  input_params:
+    code:
+      type: string
+      description: Employee code
+
+  output_description: Paysheet of an employee
+  vars:
+    Code: Employee Code
+    Designation: Employee Designation
+    Department: Employee Department
+    BASIC: Basic Salary
+    House Rent Allowance: House Rent Allowance
+    Conveyance Allowance: Conveyance Allowance
+    Special Allowance: Special Allowance
+    Field Expenses: Field Expenses
+    Total Earnings: Total Earnings
+    Income Tax: Income Tax
+    Provident Fund: Provident Fund
+    Other Deductions: Other Deductions
+    Total Deductions: Total Deductions
+    NETPAY: Net Pay
+    Remarks: Remarks
+
+  use: |
+    To returns the paysheet of an employee based on the employee code.

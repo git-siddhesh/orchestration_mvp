@@ -18,11 +18,18 @@ class DATAPipeline(DATAAgent):
         super().__init__()
         self.chat_session   = chat_session
         self.conversation   = conversation
+        # self.state = "predefined_queries"
 
     async def run(self)-> Tuple[str, CounterQueryPayload | BotResponsePayload]:
         print("DATAPipeline run")
+
+        print("%% checking predefined queries vs generic queries")
+
+        response = await self.detect_relevant_predefined_queries()
+        await self.resolve_missing_variables(response['relevant_queries'])
+
         relevant_vars: Dict[str, Any] = await self.detect_relevant_vars() 
-        await self.resolve_api_dependencies(relevant_vars)
+        await self.resolve_missing_variables(list(relevant_vars.keys()))
 
         await self.generate_counter_queries()
 
@@ -34,6 +41,10 @@ class DATAPipeline(DATAAgent):
         if count_query_payload: # counter queries are pending...
             return (PacketType.COUNTER_QUERY, count_query_payload)
         
+        # if self.state == "predefined_queries":
+        #     self.state = "generic_queries"
+        #     return await self.run()
+
         await self.execute_apis()
         api_response_payload: BotResponsePayload = await self.api_response_generation()
         return (PacketType.BOT_RESPONSE, api_response_payload)

@@ -23,6 +23,7 @@ class Chat(LLMAgent):
 
     def initiate_conversation(self, payload: UserQueryPayload) -> None:
         print("Initiating conversation...")
+        # Chat.conversation: Conversation = Conversation(
         self.conversation: Conversation = Conversation(
             query_data = payload,
             SAQ = "",

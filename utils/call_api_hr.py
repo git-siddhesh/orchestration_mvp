@@ -1,3 +1,89 @@
+from utils.db_utils import execute_query
+from typing import Dict, List, Tuple, Any, Union
+
+def get_user_paysheet(**kwargs:Dict[str, Any]) -> Dict | None:
+    code = kwargs.get("user_id")
+    result:Any = execute_query("SELECT * FROM paysheet WHERE Code = ?", args=(code,))
+    print(result)
+    return result[0] if result else {}
+
+def calculate_bonus_amount(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
+    user_id = kwargs.get("user_id")
+    fiscal_year = kwargs.get("fiscal_year")
+    bonus_amount = 50000
+    bonus_type = "Performance Bonus"
+    return {
+        "bonus_amount": bonus_amount,
+        "bonus_type": bonus_type,
+    }
+
+def process_leave_encashment(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
+    user_id = kwargs.get("user_id")
+    leave_type = kwargs.get("leave_type")
+    encashment_request = kwargs.get("encashment_request")
+
+    return {
+        "encashment_amount": 5000,
+    }
+
+def calc_total_reimbursement_for_dept(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
+    department = kwargs.get("department")
+    month = kwargs.get("month")
+    total_reimbursement = 500000
+    return {
+        "total_reimbursement": total_reimbursement,
+    }
+
+def update_paysheet(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
+    emp_id = kwargs.get("EMP_ID")
+    department = kwargs.get("Department")
+    designation = kwargs.get("Designation")
+
+    return {
+        "status": "Updated",
+        "message": "Paysheet updated successfully",
+    }
+
+def add_deduction(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
+    emp_id = kwargs.get("EMP_ID")
+    name = kwargs.get("Name")
+    deductions = kwargs.get("Deductions")
+    reason = kwargs.get("Reason")
+
+    return {
+        "status": "Success",
+        "message": "Deduction added successfully",
+    }
+
+def fetch_deductions(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
+    emp_id = kwargs.get("EMP_ID")
+    return {
+        "EMP_ID": emp_id,
+        "Deductions": 5000,
+        "Reason": "Loan repayment",
+    }
+
+def submit_reimbursement_request(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
+    emp_id = kwargs.get("EMP_ID")
+    reimbursements = kwargs.get("Reimbursements")
+    reason = kwargs.get("Reason")
+    remarks = kwargs.get("Remarks")
+
+    return {
+        "status": "Success",
+        "message": "Reimbursement request submitted successfully",
+    }
+
+def get_monthly_reimbursements(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
+    emp_id = kwargs.get("EMP_ID")
+    return {
+        "amount": 10000,
+        "Bill_No": "BILL123",
+        "Reason": "Travel expenses",
+        "Approval_Status": "Approved",
+        "Remark": "Approved by manager",
+    }
+
 def get_user_bonus_details(**kwargs):
     user_id = kwargs.get("user_id")
     fiscal_year = kwargs.get("fiscal_year")
@@ -144,6 +230,15 @@ def get_max_encashable_leave(**kwargs):
 
 
 tools = {
+    "get_user_paysheet": get_user_paysheet,
+    "calculate_bonus_amount": calculate_bonus_amount,
+    "process_leave_encashment": process_leave_encashment,
+    "calc_total_reimbursement_for_dept": calc_total_reimbursement_for_dept,
+    "update_paysheet": update_paysheet,
+    "add_deduction": add_deduction,
+    "fetch_deductions": fetch_deductions,
+    "submit_reimbursement_request": submit_reimbursement_request,
+    "get_monthly_reimbursements": get_monthly_reimbursements,
     "get_user_bonus_details": get_user_bonus_details,
     "get_user_increment_details": get_user_increment_details,
     "get_travel_claim_status": get_travel_claim_status,
@@ -160,5 +255,6 @@ tools = {
     "get_travel_policy_limits": get_travel_policy_limits,
     "get_salary_equity_comparison": get_salary_equity_comparison,
     "get_leave_balance": get_leave_balance,
-    "get_max_encashable_leave": get_max_encashable_leave,
+    "get_max_encashable_leave": get_max_encashable_leave
+
 }
