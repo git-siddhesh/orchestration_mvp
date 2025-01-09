@@ -136,6 +136,7 @@ class ENGINE(Chat, PipelineHandler):
         print("ENGINE __init__")
         self.chat_session = ChatSession(session_id=session_id)
         self.chat_session.chat_history = []
+        self.pipeline: Any = None
     
 
     async def set_user_data(self, payload: UserDataPayload) -> None:
@@ -150,6 +151,15 @@ class ENGINE(Chat, PipelineHandler):
         if response["response_type"] == "1" or response["response_type"] == 1:
             return True, response["response"]
         return False, None
+    
+
+    async def update_memory(self, subquery: str, keyword: str, user_response: str):
+        input_vars = "\n".join([f"`{key} : {value}`" for key, value in self.missing_vars.items()])
+        llm_query = f"Query: {subquery} \nkeyword: {keyword} \nValue: {user_response}\nList of Variables: {input_vars}"
+        response: Dict[str, str] = await self.llm_call(llm_query, use="extract_vars")
+    
+        self.chat_session.user_data.api.input_data.update(response) # type: ignore
+        self.chat_session.chat_history.append(Message(content=user_response, sender="user", metadata={"type": "counter_response"})) # type: ignore
 
 
     async def get_response(self) -> WebSocketPacket:
@@ -168,9 +178,9 @@ class ENGINE(Chat, PipelineHandler):
             )
       
     
-        pipeline: PipelineSchema = await self.detect_pipeline(chat_session=self.chat_session, conversation=self.conversation)
-        print("Pipeline detected: ", pipeline.__class__.__name__)
-        payload_type, payload = await pipeline.run()  
+        self.pipeline: PipelineSchema = await self.detect_pipeline(chat_session=self.chat_session, conversation=self.conversation)
+        print("Pipeline detected: ", self.pipeline.__class__.__name__)
+        payload_type, payload = await self.pipeline.run()  
         response: str = ""
         if payload_type == PacketType.BOT_RESPONSE:
             response = payload.bot_response.text
@@ -201,5 +211,35 @@ class ENGINE(Chat, PipelineHandler):
         )
             
 
+    async def gather_and_generate_response(self) -> WebSocketPacket:
+        payload_type, payload = await self.pipeline.continue_run()  
+        response: str = ""
+        if payload_type == PacketType.BOT_RESPONSE:
+            response = payload.bot_response.text
+
+        elif payload_type == PacketType.COUNTER_QUERY:
+            response = payload.counter_query.text
+
+        elif payload_type == PacketType.RAG_RESPONSE:
+            response = payload.bot_response.text
+            
+            self.conversation.rag_responses = payload
+
+        elif payload_type == PacketType.API_RESPONSE:
+            response = payload.bot_response.text
+
+        else:
+            payload = BotResponsePayload(bot_response=Response(text="No valid response type found"))
+            payload_type = PacketType.ERROR
+
+        if payload_type != PacketType.ERROR:
+            self.chat_session.chat_history.append(Message(content=response, sender="bot", metadata={"type": payload_type}))
 
         
+        return WebSocketPacket(
+            packet_type=payload_type,
+            session_id=self.chat_session.session_id,
+            conversation_id=None,
+            payload=payload
+        )
+    

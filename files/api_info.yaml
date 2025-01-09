@@ -112,7 +112,7 @@ calc_total_reimbursement_for_dept:
 
 update_paysheet_details:
   input_vars:
-    EMP_ID: "Unique identifier for the employee"
+    user_id: "Unique identifier for the employee"
     Department: "Updated department of the employee"
     Designation: "Updated designation of the employee"
   output_vars:
@@ -123,21 +123,21 @@ update_paysheet_details:
 
 # calculate_net_pay:
 #   input_vars:
-#     EMP_ID: "Unique identifier for the employee"
+#     user_id: "Unique identifier for the employee"
 #     BASIC: "Basic salary of the employee"
 #     House_Rent_Allowance: "House rent allowance of the employee"
 #     Income_Tax: "Income tax deductions"
 #   output_vars:
-#     EMP_ID: "Unique identifier for the employee"
+#     user_id: "Unique identifier for the employee"
 #     NETPAY: "Calculated net pay for the employee"
 #   api_to_be_called: calculate_net_pay
 #   use: "To calculate the net pay of an employee"
 
 # generate_it_summary:
 #   input_vars:
-#     EMP_ID: "Unique identifier for the employee"
+#     user_id: "Unique identifier for the employee"
 #   output_vars:
-#     EMP_ID: "Unique identifier for the employee"
+#     user_id: "Unique identifier for the employee"
 #     Total_Earnings: "Total earnings for the employee"
 #     Jul-24: "Earnings for July 2024"
 #     Aug-24: "Earnings for August 2024"
@@ -147,7 +147,7 @@ update_paysheet_details:
 
 # update_it_record:
 #   input_vars:
-#     EMP_ID: "Unique identifier for the employee"
+#     user_id: "Unique identifier for the employee"
 #     Jul-24: "Updated earnings for July 2024"
 #     Remarks: "Updated remarks for the record"
 #   output_vars:
@@ -158,7 +158,7 @@ update_paysheet_details:
 
 # calculate_prorated_earnings:
 #   input_vars:
-#     EMP_ID: "Unique identifier for the employee"
+#     user_id: "Unique identifier for the employee"
 #     Working_days: "Number of working days in the given period"
 #     Annual_CTC_PA: "Annual CTC of the employee"
 #   output_vars:
@@ -167,9 +167,9 @@ update_paysheet_details:
 
 # get_ctc_summary:
 #   input_vars:
-#     EMP_ID: "Unique identifier for the employee"
+#     user_id: "Unique identifier for the employee"
 #   output_vars:
-#     EMP_ID: "Unique identifier for the employee"
+#     user_id: "Unique identifier for the employee"
 #     Annual_CTC_PA: "Annual CTC of the employee"
 #     Monthly_Fixed_CTC: "Fixed monthly CTC of the employee"
 #     VP: "Variable pay component of the employee"
@@ -177,7 +177,7 @@ update_paysheet_details:
 
 # validate_pf_contributions:
 #   input_vars:
-#     EMP_ID: "Unique identifier for the employee"
+#     user_id: "Unique identifier for the employee"
 #     PF_Wages: "Wages considered for PF calculation"
 #     PF_as_per_calculation: "Calculated PF amount"
 #     As_per_salary_Sheet: "PF amount from the salary sheet"
@@ -188,7 +188,7 @@ update_paysheet_details:
 
 # update_pf_remarks:
 #   input_vars:
-#     EMP_ID: "Unique identifier for the employee"
+#     user_id: "Unique identifier for the employee"
 #     Remarks: "Updated remarks for the PF record"
 #   output_vars:
 #     status: "Operation status (success or failure)"
@@ -197,7 +197,7 @@ update_paysheet_details:
 
 add_deduction:
   input_vars:
-    EMP_ID: "Unique identifier for the employee"
+    user_id: "Unique identifier for the employee"
     Name: "Name of the employee"
     Deductions: "Total deduction amount"
     Reason: "Reason for the deductions"
@@ -209,9 +209,9 @@ add_deduction:
 
 fetch_deductions:
   input_vars:
-    EMP_ID: "Unique identifier for the employee"
+    user_id: "Unique identifier for the employee"
   output_vars:
-    EMP_ID: "Unique identifier for the employee"
+    user_id: "Unique identifier for the employee"
     Deductions: "Total deduction amount"
     Reason: "Reason for the deductions"
   api_to_be_called: fetch_deductions
@@ -219,7 +219,7 @@ fetch_deductions:
 
 submit_reimbursement_request:
   input_vars:
-    EMP_ID: "Unique identifier for the employee"
+    user_id: "Unique identifier for the employee"
     Reimbursements: "Total reimbursement amount"
     Reason: "Reason for the reimbursement"
     Remarks: "Additional notes or remarks"
@@ -231,7 +231,7 @@ submit_reimbursement_request:
 
 get_monthly_reimbursements:
   input_vars:
-    EMP_ID: "Unique identifier for the employee"
+    user_id: "Unique identifier for the employee"
   output_vars:
     amount: "Reimbursement amount for the month"
     Bill_No: "Associated bill number"
@@ -240,3 +240,15 @@ get_monthly_reimbursements:
     Remark: "Additional notes or remarks"
   api_to_be_called: get_monthly_reimbursements
   use: "To fetch monthly reimbursement details of an employee"
+
+get_leave_balance:
+  input_vars:
+    user_id: "Unique identifier for the employee"
+    month: "The month for which leave balance is to be fetched"
+    department: "Department of the employee"
+  output_vars:
+    Sick_Leave: "Sick leave balance"
+    Casual_Leave: "Casual leave balance"
+    Earned_Leave: "Earned leave balance"
+  api_to_be_called: get_leave_balance
+  use: "To fetch the leave balance details of an employee"

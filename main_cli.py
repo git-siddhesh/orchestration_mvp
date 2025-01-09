@@ -92,4 +92,5 @@ async def endpoint(packet: WebSocketPacket) -> WebSocketPacket | None:
     #         )
     # finally:
     if response:
+        print("RESPONSE: ", response.model_dump())
         return response

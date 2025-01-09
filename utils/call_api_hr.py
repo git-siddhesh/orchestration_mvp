@@ -7,6 +7,18 @@ def get_user_paysheet(**kwargs:Dict[str, Any]) -> Dict | None:
     print(result)
     return result[0] if result else {}
 
+
+def get_leave_balance(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
+    user_id = kwargs.get("user_id")
+    month = kwargs.get("month")
+    department = kwargs.get("department")
+    return {
+        "Sick_Leave": 10,
+        "Casual_Leave": 5,
+        "Earned_Leave": 15,
+    }
+
+
 def calculate_bonus_amount(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
     user_id = kwargs.get("user_id")
     fiscal_year = kwargs.get("fiscal_year")
@@ -35,7 +47,7 @@ def calc_total_reimbursement_for_dept(**kwargs:Dict[str, Any]) -> Dict[str, Any]
     }
 
 def update_paysheet(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
-    emp_id = kwargs.get("EMP_ID")
+    user_id = kwargs.get("user_id")
     department = kwargs.get("Department")
     designation = kwargs.get("Designation")
 
@@ -45,7 +57,7 @@ def update_paysheet(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
     }
 
 def add_deduction(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
-    emp_id = kwargs.get("EMP_ID")
+    user_id = kwargs.get("user_id")
     name = kwargs.get("Name")
     deductions = kwargs.get("Deductions")
     reason = kwargs.get("Reason")
@@ -56,15 +68,15 @@ def add_deduction(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
     }
 
 def fetch_deductions(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
-    emp_id = kwargs.get("EMP_ID")
+    user_id = kwargs.get("user_id")
     return {
-        "EMP_ID": emp_id,
+        "user_id": user_id,
         "Deductions": 5000,
         "Reason": "Loan repayment",
     }
 
 def submit_reimbursement_request(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
-    emp_id = kwargs.get("EMP_ID")
+    user_id = kwargs.get("user_id")
     reimbursements = kwargs.get("Reimbursements")
     reason = kwargs.get("Reason")
     remarks = kwargs.get("Remarks")
@@ -75,7 +87,7 @@ def submit_reimbursement_request(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
     }
 
 def get_monthly_reimbursements(**kwargs:Dict[str, Any]) -> Dict[str, Any]:
-    emp_id = kwargs.get("EMP_ID")
+    user_id = kwargs.get("user_id")
     return {
         "amount": 10000,
         "Bill_No": "BILL123",

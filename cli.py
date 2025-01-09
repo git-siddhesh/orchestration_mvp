@@ -125,7 +125,7 @@ async def main():
         if choice == "1":
             navigate_menu()
         elif choice == "2":
-            user_input = input("Ask me anything: ").strip()
+            user_input = input("User: ").strip()
             chat_history.append({"role": "user", "content": user_input})
 
             if query_type == "main":
@@ -140,26 +140,39 @@ async def main():
                 }
                 payload = WebSocketPacket(**payload)
                 response = await endpoint(payload)
-                last_payload = response
-            elif query_type == "counter":
-                last_payload.payload["user_response"] = {"text": user_input}
-                response = await endpoint(last_payload)
+
+                # store the response for future use
                 last_payload = response
 
-            if response.packet_type == "BOT_RESPONSE":
-                print("Bot Response:", response.payload["bot_response"]["text"])
-                query_type = "main"
-            elif response.packet_type == "COUNTER_QUERY":
-                print("Counter Query:", response.payload["counter_query"]["text"])
+            elif query_type == "counter":
+                # add the response to same last counter query payload and send back to server
+                last_payload.payload.user_response = Response(text=user_input)
+                response = await endpoint(last_payload)
+                # update the last payload with the new response
+                last_payload = response
+
+            print("\n\n*****************************************************")
+            # ------------- When you got the counter query from the bot ----------------
+            if response.packet_type == PacketType.COUNTER_QUERY:
+                print("Counter Query:", response.payload.counter_query.text)
                 query_type = "counter"
-            elif response.packet_type == "RAG_DOCUMENTS":
-                print("Bot Response:", response.payload["bot_response"]["text"])
+
+            # ------------- When you got the final response from the bot for main query ----------------
+            elif response.packet_type == PacketType.BOT_RESPONSE:
+                print("Bot Response:", response.payload.bot_response.text)
+                query_type = "main"
+            elif response.packet_type == PacketType.API_RESPONSE:
+                print("API Response:", response.payload.bot_response.text)
+                query_type = "main"
+            elif response.packet_type == PacketType.RAG_RESPONSE:
+                print("Bot Response:", response.payload.bot_response.text)
                 docs.clear()
                 docs.extend([
                     {"page_content": doc.content, "metadata": doc.metadata}
-                    for doc in response.payload["documents"]
+                    for doc in response.payload.documents
                 ])
                 query_type = "main"
+            # ------------------------------------------------------------------------------------------
 
         elif choice == "3":
             print("Exiting HR ChatBot. Goodbye!")
