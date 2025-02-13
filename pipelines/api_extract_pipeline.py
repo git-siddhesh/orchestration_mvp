@@ -1,7 +1,7 @@
 from typing import List, Tuple, Dict, Any
 import uuid
 
-from packets import PacketType, CounterQueryPayload, BotResponsePayload
+from packets import PacketType, CounterQueryPayload, BotResponsePayload, ChatResponsePayload
 
 from utils.call_api_hr import *
 
@@ -20,7 +20,7 @@ class APIPipeline(APIAgent):
         self.conversation   = conversation
 
 
-    async def run(self)-> Tuple[str, CounterQueryPayload | BotResponsePayload]:
+    async def run(self)-> Tuple[str, ChatResponsePayload]:
 
         relevant_vars: Dict[str, Any] = await self.detect_relevant_vars() 
         await self.resolve_api_dependencies(relevant_vars)
@@ -29,10 +29,9 @@ class APIPipeline(APIAgent):
 
         return await self.continue_run()
 
-    async def continue_run(self)-> Tuple[str, CounterQueryPayload | BotResponsePayload]:
-        count_query_payload: CounterQueryPayload | None= await self.resolve_counter_queries()
-
-        if count_query_payload: # counter queries are pending...
+    async def continue_run(self)-> Tuple[str, ChatResponsePayload]:
+        if len(self.counter_queries) > 0: # counter queries are pending...
+            count_query_payload: CounterQueryPayload = self.counter_queries.pop(0)
             return (PacketType.COUNTER_QUERY, count_query_payload)
         
         await self.execute_apis()

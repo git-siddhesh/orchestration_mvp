@@ -44,13 +44,10 @@ async def endpoint(packet: WebSocketPacket) -> WebSocketPacket | None:
 
         bot.conversation.counter_queries.append(packet.payload)
 
-        await bot.update_memory(
-            subquery=packet.payload.counter_query.text,
-            keyword=packet.payload.query_variable,
-            user_response=packet.payload.user_response.text
-        )
-
-        response: WebSocketPacket = await bot.gather_and_generate_response()
+        response: WebSocketPacket = await bot.gather_and_generate_response(
+                                                    subquery=packet.payload.counter_query.text,
+                                                    keyword=packet.payload.query_variable,
+                                                    user_response=packet.payload.user_response.text)
 
     # elif isinstance(packet.payload, ResponseFeedbackPayload):
     elif packet.packet_type == PacketType.RESPONSE_FEEDBACK:

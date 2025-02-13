@@ -3,6 +3,14 @@ from typing import List, Dict, Any, Optional, Union, Tuple
 from enum import Enum
 from datetime import datetime
 
+from pipelines.api_extract_pipeline import APIPipeline
+from pipelines.rag_pipeline import RAGPipeline
+from pipelines.data_extract_pipeline import DATAPipeline
+from pipelines.hybrid_pipeline import HybridPipeline
+
+# create a annotation for the pipelines 
+from typing import  Annotated
+
 
 class PacketType(str, Enum):
     """
@@ -181,7 +189,7 @@ class RAGPayload(BaseModel):
     Payload for Retrieval-Augmented Generation (RAG) documents.
     """
     bot_response: Response = Field(..., description="The bot's response to the user query.")
-    documents: Optional[List[RAGDocument]] = Field([], description="List of RAG documents relevant to the query.")
+    documents: Optional[List[RAGDocument]] = Field(default_factory=list, description="List of RAG documents relevant to the query.")
 
 
 class RelatedQuestionsPayload(BaseModel):
@@ -237,20 +245,20 @@ class WebSocketPacket(BaseModel):
 
 
 class Conversation(BaseModel):
-    query_data: UserQueryPayload = Field(..., description="The user's query data.")
-    SAQ: str = Field(..., description="The user's query data.")
-    intent: str = Field(..., description="The user's query data.")
-    counter_queries: List[CounterQueryPayload] = Field(default=[], description="List of counter-queries and responses.")
-    bot_responses: List[BotResponsePayload] = Field(default=[], description="List of bot responses.")
-    rag_responses: Optional[RAGPayload] = Field(default=None, description="List of RAG responses.")
-    base_response: Optional[str] = Field(default=None, description="Base response for the user query.")
-    related_questions: List[RelatedQuestionsPayload] = Field(default=[], description="List of related questions.")
-    response_feedback: List[ResponseFeedbackPayload] = Field(default=[], description="List of response feedback.")
+    query_data: UserQueryPayload = Field(default=..., description="The user's query data.")
+    SAQ: str = Field(default=..., description="The user's query data.")
+    intent: str = Field(default=..., description="The user's query data.")
+    counter_queries: List[CounterQueryPayload] = Field(default_factory=list, description="List of counter-queries and responses.")
+    bot_responses: List[BotResponsePayload] = Field(default_factory=list, description="List of bot responses.")
+    rag_responses: Optional[RAGPayload] = Field(default=..., description="List of RAG responses.")
+    base_response: Optional[str] = Field(default='', description="Base response for the user query.")
+    related_questions: List[RelatedQuestionsPayload] = Field(default_factory=list, description="List of related questions.")
+    response_feedback: List[ResponseFeedbackPayload] = Field(default_factory=list, description="List of response feedback.")
     
 class ChatSession(BaseModel):
     session_id: str = Field(..., description="Unique identifier for the WebSocket session.")
     user_data: Optional[UserData] = Field(default=None, description="User data associated with the session.")
-    chat_history: Optional[List[Message]] = Field(default=[], description="Conversation history for the session.")
+    chat_history: List[Message] = Field(default_factory=list, description="Conversation history for the session.")
 
     def fetch_history(self, n: int=-1, reverse: bool=True) -> str:
         """
@@ -266,6 +274,20 @@ class ChatSession(BaseModel):
         return chat_history
         
 
+
+PipelineSchema = Annotated[Union[
+    # DATAPipeline, 
+    APIPipeline, 
+    RAGPipeline, 
+    # HybridPipeline, 
+    # None
+    ], "PipelineSchema"]
+
+ChatResponsePayload = Annotated[Union[
+    CounterQueryPayload,
+    BotResponsePayload,
+    RAGPayload,],
+    "ChatResponsePacket"]
 
 # response = WebSocketPacket(
 #                     packet_type=PacketType.ERROR,

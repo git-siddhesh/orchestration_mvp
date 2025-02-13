@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict, Any
+from typing import List, Dict
 
 from utils.llm import LLMAgent
 
@@ -26,13 +26,13 @@ class Chat(LLMAgent):
         # Chat.conversation: Conversation = Conversation(
         self.conversation: Conversation = Conversation(
             query_data = payload,
-            SAQ = "",
-            intent = "",
-            counter_queries=[],
-            bot_responses=[],
-            rag_responses=None,
-            related_questions=[],
-            response_feedback=[],
+            # SAQ = "",
+            # intent = "",
+            # counter_queries=[],
+            # bot_responses=[],
+            # rag_responses=None,
+            # related_questions=[],
+            # response_feedback=[],
         )
         self.missing_vars = {}
         print("Conversation initiated...")
